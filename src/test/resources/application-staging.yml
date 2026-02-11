@@ -1,0 +1,20 @@
+baseUrl: https://staging-api.sc.kpi.ua
+timeout: 60000
+
+execution:
+  parallel: classes
+  threadCount: 3
+
+auth:
+  enabled: true
+  tierCredentials:
+    BASIC:
+      email: test-basic@sc.kpi.ua
+      password: changeme
+    ADMIN:
+      email: test-admin@sc.kpi.ua
+      password: changeme
+
+retry:
+  maxAttempts: 2
+  backoffMs: 2000

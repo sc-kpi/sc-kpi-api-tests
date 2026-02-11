@@ -1,0 +1,21 @@
+baseUrl: http://localhost:8080
+timeout: 30000
+
+execution:
+  parallel: none
+  threadCount: 1
+  groups: ""
+
+auth:
+  enabled: false
+  tokenEndpoint: /api/v1/auth/login
+  refreshEndpoint: /api/v1/auth/refresh
+  tierCredentials: {}
+
+retry:
+  maxAttempts: 0
+  backoffMs: 1000
+
+cleanup:
+  enabled: true
+  strategy: after_suite

@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Health Response",
+  "type": "object",
+  "required": ["status"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["UP", "DOWN", "OUT_OF_SERVICE", "UNKNOWN"]
+    },
+    "components": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

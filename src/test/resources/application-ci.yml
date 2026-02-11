@@ -1,0 +1,17 @@
+baseUrl: http://localhost:8080
+timeout: 45000
+
+execution:
+  parallel: classes
+  threadCount: 5
+
+auth:
+  enabled: false
+
+retry:
+  maxAttempts: 1
+  backoffMs: 500
+
+cleanup:
+  enabled: true
+  strategy: after_suite

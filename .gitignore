@@ -1,0 +1,29 @@
+# Build outputs
+build/
+out/
+
+# Gradle
+.gradle/
+
+# IDE — IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# IDE — Eclipse
+.classpath
+.project
+.settings/
+
+# IDE — VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Allure results (regenerated on each test run)
+allure-results/
+allure-report/

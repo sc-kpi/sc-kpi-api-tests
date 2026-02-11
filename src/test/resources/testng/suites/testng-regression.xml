@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Regression Tests" parallel="classes" thread-count="5" verbose="1">
+
+    <listeners>
+        <listener class-name="ua.kpi.sc.test.api.listener.ExecutionListener"/>
+        <listener class-name="ua.kpi.sc.test.api.listener.SuiteListener"/>
+        <listener class-name="ua.kpi.sc.test.api.listener.AllureTestListener"/>
+        <listener class-name="ua.kpi.sc.test.api.listener.MethodInterceptor"/>
+    </listeners>
+
+    <test name="Regression">
+        <groups>
+            <run>
+                <exclude name="framework"/>
+            </run>
+        </groups>
+        <packages>
+            <package name="ua.kpi.sc.test.api.tests.*"/>
+        </packages>
+    </test>
+</suite>

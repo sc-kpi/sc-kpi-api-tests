@@ -1,0 +1,129 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version "${allureGradleVersion}"
+}
+
+group = "${group}"
+version = "${version}"
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    // REST Assured
+    implementation "io.rest-assured:rest-assured:${restAssuredVersion}"
+    implementation "io.rest-assured:json-schema-validator:${restAssuredVersion}"
+
+    // TestNG
+    implementation "org.testng:testng:${testngVersion}"
+
+    // Allure
+    implementation "io.qameta.allure:allure-testng:${allureVersion}"
+    implementation "io.qameta.allure:allure-rest-assured:${allureVersion}"
+
+    // Jackson 3 (annotations stay on 2.x coordinates; jsr310 merged into databind)
+    implementation "tools.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "tools.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
+
+    // AssertJ
+    implementation "org.assertj:assertj-core:${assertjVersion}"
+
+    // DataFaker
+    implementation "net.datafaker:datafaker:${datafakerVersion}"
+
+    // Logging
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    // Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-parameters', '-proc:full']
+}
+
+// Default suite file
+def suiteFile = System.getProperty('suite', 'testng-smoke.xml')
+
+test {
+    useTestNG {
+        suiteXmlFiles = [file("src/test/resources/testng/suites/${suiteFile}")]
+
+        def includeGroups = System.getProperty('includeGroups')
+        def excludeGroups = System.getProperty('excludeGroups')
+
+        if (includeGroups) {
+            includeGroups(includeGroups.split(',') as Set)
+        }
+        if (excludeGroups) {
+            excludeGroups(excludeGroups.split(',') as Set)
+        }
+    }
+
+    systemProperties = System.properties.findAll { key, _ ->
+        key.startsWith('baseUrl') ||
+        key.startsWith('env') ||
+        key.startsWith('auth.') ||
+        key.startsWith('parallel') ||
+        key.startsWith('threadCount') ||
+        key.startsWith('allure.')
+    }
+
+    systemProperty 'allure.results.directory', "${project.buildDir}/allure-results"
+
+    ignoreFailures = System.getProperty('ignoreFailures', 'false').toBoolean()
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showExceptions true
+        showCauses true
+        showStackTraces true
+        exceptionFormat 'full'
+    }
+}
+
+tasks.register('smoke', Test) {
+    group = 'verification'
+    description = 'Run smoke tests'
+    useTestNG {
+        suiteXmlFiles = [file('src/test/resources/testng/suites/testng-smoke.xml')]
+    }
+    systemProperty 'allure.results.directory', "${project.buildDir}/allure-results"
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}
+
+tasks.register('regression', Test) {
+    group = 'verification'
+    description = 'Run regression tests'
+    useTestNG {
+        suiteXmlFiles = [file('src/test/resources/testng/suites/testng-regression.xml')]
+    }
+    systemProperty 'allure.results.directory', "${project.buildDir}/allure-results"
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}
+
+allure {
+    version = "${allureVersion}"
+}
