@@ -2,7 +2,11 @@
 
 Automated API test framework for the SC-KPI platform.
 
-**Java 25** · **Gradle 9.3.1** · **REST Assured 6.0** · **TestNG 7.12** · **Allure 2.32**
+![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)
+![Gradle](https://img.shields.io/badge/Gradle-9.3.1-02303A?logo=gradle)
+![REST Assured](https://img.shields.io/badge/REST_Assured-6.0.0-4caf50)
+![TestNG](https://img.shields.io/badge/TestNG-7.12.0-cd6532)
+![Allure](https://img.shields.io/badge/Allure-2.32.0-ff6600?logo=allure)
 
 ## Prerequisites
 
