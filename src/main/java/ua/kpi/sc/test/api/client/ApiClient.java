@@ -104,4 +104,28 @@ public class ApiClient {
     public Response delete(String path, String authToken) {
         return execute("DELETE", path, () -> requestSpec(authToken).delete(path));
     }
+
+    public Response postWithCookie(String path, String cookieName, String cookieValue) {
+        return execute("POST", path, () -> requestSpec().cookie(cookieName, cookieValue).post(path));
+    }
+
+    public Response postEmpty(String path) {
+        return execute("POST", path, () -> requestSpec().post(path));
+    }
+
+    public Response postEmpty(String path, String authToken) {
+        return execute("POST", path, () -> requestSpec(authToken).post(path));
+    }
+
+    public Response postRaw(String path, String rawBody) {
+        return execute("POST", path, () -> requestSpec().body(rawBody).post(path));
+    }
+
+    public Response getWithCookie(String path, String cookieName, String cookieValue) {
+        return execute("GET", path, () -> requestSpec().cookie(cookieName, cookieValue).get(path));
+    }
+
+    public Response postRawWithContentType(String path, String rawBody, String contentType) {
+        return execute("POST", path, () -> requestSpec().contentType(contentType).body(rawBody).post(path));
+    }
 }

@@ -6,6 +6,8 @@ public final class Endpoint {
     public static final String AUTH_LOGIN = AUTH + "/login";
     public static final String AUTH_REGISTER = AUTH + "/register";
     public static final String AUTH_REFRESH = AUTH + "/refresh";
+    public static final String AUTH_LOGOUT = AUTH + "/logout";
+    public static final String AUTH_ME = AUTH + "/me";
 
     // Users
     public static final String USERS = "/api/v1/users";

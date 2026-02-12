@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Product Defects",
+    "matchedStatuses": ["failed"],
+    "traceRegex": ".*AssertionError.*|.*AssertJ.*"
+  },
+  {
+    "name": "Test Defects",
+    "matchedStatuses": ["broken"],
+    "traceRegex": ".*TestFrameworkException.*|.*NullPointerException.*|.*IllegalStateException.*"
+  },
+  {
+    "name": "Infrastructure Issues",
+    "matchedStatuses": ["broken"],
+    "traceRegex": ".*ConnectException.*|.*SocketTimeoutException.*|.*UnknownHostException.*"
+  },
+  {
+    "name": "Skipped Tests",
+    "matchedStatuses": ["skipped"]
+  }
+]

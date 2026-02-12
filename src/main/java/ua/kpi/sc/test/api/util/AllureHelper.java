@@ -31,6 +31,10 @@ public final class AllureHelper {
             props.setProperty("Auth Enabled", String.valueOf(Config.isAuthEnabled()));
             props.setProperty("Parallel Mode", Config.execution().getParallel());
             props.setProperty("Thread Count", String.valueOf(Config.execution().getThreadCount()));
+            props.setProperty("Environment Profile", System.getProperty("env", "default"));
+            props.setProperty("Retry Max Attempts", String.valueOf(Config.retry().getMaxAttempts()));
+            props.setProperty("Retry Backoff (ms)", String.valueOf(Config.retry().getBackoffMs()));
+            props.setProperty("Cleanup Enabled", String.valueOf(Config.cleanup().isEnabled()));
             props.setProperty("Java Version", System.getProperty("java.version", "unknown"));
             props.setProperty("OS", System.getProperty("os.name", "unknown"));
 
