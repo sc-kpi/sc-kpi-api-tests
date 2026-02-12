@@ -1,0 +1,198 @@
+name: Regression Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test suite to run"
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - regression
+          - all
+      api_branch:
+        description: "sc-kpi-api branch to checkout & build"
+        required: false
+        default: develop
+        type: string
+      environment:
+        description: "Config profile"
+        required: true
+        default: ci
+        type: choice
+        options:
+          - ci
+          - staging
+      base_url:
+        description: "Override base URL (skips Docker startup if set)"
+        required: false
+        default: ""
+        type: string
+      auth_enabled:
+        description: "Enable authentication"
+        required: false
+        default: false
+        type: boolean
+      thread_count:
+        description: "Parallel thread count"
+        required: true
+        default: "5"
+        type: choice
+        options:
+          - "1"
+          - "3"
+          - "5"
+          - "10"
+
+concurrency:
+  group: regression-${{ github.run_id }}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  api-tests:
+    name: API Regression (${{ inputs.suite }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout test repo
+        uses: actions/checkout@v4
+
+      - name: Checkout sc-kpi-api
+        if: inputs.base_url == ''
+        uses: actions/checkout@v4
+        with:
+          repository: sc-kpi/sc-kpi-api
+          ref: ${{ inputs.api_branch }}
+          path: sc-kpi-api
+
+      - name: Generate JWT secret
+        if: inputs.base_url == ''
+        run: echo "JWT_SECRET=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+
+      - name: Start services
+        if: inputs.base_url == ''
+        working-directory: sc-kpi-api
+        run: docker compose up -d --build --wait --wait-timeout 180
+        env:
+          SPRING_PROFILES_ACTIVE: dev
+          JWT_SECRET: ${{ env.JWT_SECRET }}
+
+      - name: Wait for API health
+        if: inputs.base_url == ''
+        run: |
+          timeout=120
+          while [ $timeout -gt 0 ]; do
+            if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
+              echo "API is healthy"
+              exit 0
+            fi
+            sleep 2
+            timeout=$((timeout - 2))
+          done
+          echo "API failed to become healthy within 120s"
+          docker compose -f sc-kpi-api/docker-compose.yml logs api --tail 50
+          exit 1
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run tests
+        run: |
+          ARGS="./gradlew ${{ inputs.suite }}"
+          ARGS="$ARGS -Denv=${{ inputs.environment }}"
+          ARGS="$ARGS -DthreadCount=${{ inputs.thread_count }}"
+          ARGS="$ARGS -Dauth.enabled=${{ inputs.auth_enabled }}"
+          ARGS="$ARGS -DignoreFailures=true"
+          ARGS="$ARGS --no-daemon"
+          if [[ -n "${{ inputs.base_url }}" ]]; then
+            ARGS="$ARGS -DbaseUrl=${{ inputs.base_url }}"
+          fi
+          echo "Running: $ARGS"
+          eval $ARGS
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: build/allure-results/
+          retention-days: 14
+
+      - name: Upload TestNG reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testng-reports
+          path: build/reports/tests/
+          retention-days: 14
+
+      - name: Checkout gh-pages for Allure history
+        if: always()
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+        continue-on-error: true
+
+      - name: Generate Allure report
+        if: always()
+        uses: simple-elf/allure-report-action@v1.13
+        with:
+          allure_results: build/allure-results
+          allure_report: allure-report
+          gh_pages: gh-pages
+          allure_history: allure-history
+          keep_reports: 50
+
+      - name: Fix Allure report permissions
+        if: always()
+        run: sudo rm -rf allure-history/.git
+
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+      - name: Add Job Summary
+        if: always()
+        run: |
+          REPORT_URL="https://sc-kpi.github.io/sc-kpi-api-tests/${{ github.run_number }}/"
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Regression Test Results
+
+          | Parameter | Value |
+          |-----------|-------|
+          | **Suite** | \`${{ inputs.suite }}\` |
+          | **Environment** | \`${{ inputs.environment }}\` |
+          | **API Branch** | \`${{ inputs.api_branch }}\` |
+          | **Base URL** | \`${{ inputs.base_url || 'http://localhost:8080 (Docker)' }}\` |
+          | **Auth Enabled** | \`${{ inputs.auth_enabled }}\` |
+          | **Thread Count** | \`${{ inputs.thread_count }}\` |
+          | **Allure Report** | ${REPORT_URL} |
+          EOF
+
+      - name: Dump API logs on failure
+        if: failure() && inputs.base_url == ''
+        working-directory: sc-kpi-api
+        run: docker compose logs api --tail 200
+
+      - name: Cleanup
+        if: always() && inputs.base_url == ''
+        working-directory: sc-kpi-api
+        run: docker compose down -v
