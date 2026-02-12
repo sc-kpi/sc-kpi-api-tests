@@ -30,7 +30,7 @@ public class LoggingFilter implements Filter {
             log.debug("  Header: {} = {}", header.getName(), value);
         });
         if (requestSpec.getBody() != null) {
-            log.debug("  Body: {}", String.valueOf(requestSpec.getBody()));
+            log.debug("  Body: {}", requestSpec.getBody().toString());
         }
     }
 

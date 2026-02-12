@@ -112,6 +112,37 @@ public final class TestDataFactory {
                 .build();
     }
 
+    public static RegisterRequest registerRequestWithPassword(String password) {
+        return RegisterRequest.builder()
+                .email(faker.internet().emailAddress())
+                .password(password)
+                .firstName(faker.name().firstName())
+                .lastName(faker.name().lastName())
+                .build();
+    }
+
+    public static RegisterRequest registerRequestWithNames(String firstName, String lastName) {
+        return RegisterRequest.builder()
+                .email(faker.internet().emailAddress())
+                .password("Test@" + faker.number().digits(6))
+                .firstName(firstName)
+                .lastName(lastName)
+                .build();
+    }
+
+    public static RegisterRequest registerRequestWithEmail(String email) {
+        return RegisterRequest.builder()
+                .email(email)
+                .password("Test@" + faker.number().digits(6))
+                .firstName(faker.name().firstName())
+                .lastName(faker.name().lastName())
+                .build();
+    }
+
+    public static String longString(int length) {
+        return "a".repeat(length);
+    }
+
     // Utility
     public static String randomEmail() {
         return faker.internet().emailAddress();

@@ -100,30 +100,78 @@ test {
     }
 }
 
+def configureTestTask = { Test task ->
+    task.testClassesDirs = sourceSets.test.output.classesDirs
+    task.classpath = sourceSets.test.runtimeClasspath
+
+    task.systemProperties = System.properties.findAll { key, _ ->
+        key.startsWith('baseUrl') ||
+        key.startsWith('env') ||
+        key.startsWith('auth.') ||
+        key.startsWith('parallel') ||
+        key.startsWith('threadCount') ||
+        key.startsWith('allure.')
+    }
+    task.systemProperty 'allure.results.directory', "${project.buildDir}/allure-results"
+
+    task.ignoreFailures = System.getProperty('ignoreFailures', 'false').toBoolean()
+
+    task.testLogging {
+        events 'passed', 'skipped', 'failed'
+        showExceptions true
+        showCauses true
+        showStackTraces true
+        exceptionFormat 'full'
+    }
+}
+
 tasks.register('smoke', Test) {
     group = 'verification'
     description = 'Run smoke tests'
+    configureTestTask(it)
     useTestNG {
         suiteXmlFiles = [file('src/test/resources/testng/suites/testng-smoke.xml')]
-    }
-    systemProperty 'allure.results.directory', "${project.buildDir}/allure-results"
-    testLogging {
-        events 'passed', 'skipped', 'failed'
     }
 }
 
 tasks.register('regression', Test) {
     group = 'verification'
     description = 'Run regression tests'
+    configureTestTask(it)
     useTestNG {
         suiteXmlFiles = [file('src/test/resources/testng/suites/testng-regression.xml')]
     }
-    systemProperty 'allure.results.directory', "${project.buildDir}/allure-results"
-    testLogging {
-        events 'passed', 'skipped', 'failed'
+}
+
+tasks.register('all', Test) {
+    group = 'verification'
+    description = 'Run all tests'
+    configureTestTask(it)
+    useTestNG {
+        suiteXmlFiles = [file('src/test/resources/testng/suites/testng-all.xml')]
     }
 }
 
 allure {
     version = "${allureVersion}"
+}
+
+// Workaround: allure-gradle 3.0.1 CopyCategories task has a markerFile property
+// annotated as @OutputFile but creates a directory, which fails Gradle validation.
+// Disable the broken task and replace with a simple copy.
+tasks.named('copyCategories') {
+    enabled = false
+}
+
+tasks.register('copyCategoriesFixed', Copy) {
+    group = 'allure'
+    description = 'Copy categories.json to allure-results (replaces broken plugin task)'
+    from('src/test/resources') {
+        include 'categories.json'
+    }
+    into layout.buildDirectory.dir('allure-results')
+}
+
+tasks.matching { it.name in ['allureReport', 'allureServe'] }.configureEach {
+    dependsOn 'copyCategoriesFixed'
 }
