@@ -10,13 +10,13 @@ import ua.kpi.sc.test.api.config.TestGroup;
 @Feature("Notification Settings API")
 public class NotificationSettingsTest extends BaseAuthenticatedApiTest {
 
-    @Test(enabled = false, groups = {TestGroup.POSITIVE},
+    @Test(groups = {TestGroup.TODO},
             description = "Get notification settings returns 200")
     public void getNotificationSettings() {
         // TODO: Implement when /api/v1/notifications/settings GET is ready
     }
 
-    @Test(enabled = false, groups = {TestGroup.POSITIVE},
+    @Test(groups = {TestGroup.TODO},
             description = "Update notification settings returns 200")
     public void updateNotificationSettings() {
         // TODO: Implement when /api/v1/notifications/settings PUT is ready

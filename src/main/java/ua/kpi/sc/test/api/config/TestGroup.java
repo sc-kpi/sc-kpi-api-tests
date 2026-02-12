@@ -12,6 +12,7 @@ public final class TestGroup {
     public static final String PERFORMANCE = "performance";
     public static final String CONTRACT = "contract";
     public static final String FRAMEWORK = "framework";
+    public static final String TODO = "todo";
 
     private TestGroup() {}
 }

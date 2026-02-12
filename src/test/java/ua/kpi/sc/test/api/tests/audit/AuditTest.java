@@ -10,19 +10,19 @@ import ua.kpi.sc.test.api.config.TestGroup;
 @Feature("Audit Log API")
 public class AuditTest extends BaseAdminApiTest {
 
-    @Test(enabled = false, groups = {TestGroup.POSITIVE},
+    @Test(groups = {TestGroup.TODO},
             description = "Get audit logs returns 200")
     public void getAuditLogs() {
         // TODO: Implement when /api/v1/admin/audit-logs GET is ready
     }
 
-    @Test(enabled = false, groups = {TestGroup.POSITIVE},
+    @Test(groups = {TestGroup.TODO},
             description = "Filter audit logs by entity type")
     public void filterAuditLogsByEntityType() {
         // TODO: Implement when /api/v1/admin/audit-logs GET is ready
     }
 
-    @Test(enabled = false, groups = {TestGroup.SECURITY},
+    @Test(groups = {TestGroup.TODO},
             description = "Non-admin access to audit logs returns 403")
     public void nonAdminAccessReturns403() {
         // TODO: Implement when /api/v1/admin/audit-logs GET is ready

@@ -10,13 +10,13 @@ import ua.kpi.sc.test.api.config.TestGroup;
 @Feature("Telegram Webhook API")
 public class TelegramWebhookTest extends BasePublicApiTest {
 
-    @Test(enabled = false, groups = {TestGroup.POSITIVE},
+    @Test(groups = {TestGroup.TODO},
             description = "Telegram webhook receives callback")
     public void telegramWebhookReceivesCallback() {
         // TODO: Implement when /api/v1/webhooks/telegram POST is ready
     }
 
-    @Test(enabled = false, groups = {TestGroup.NEGATIVE},
+    @Test(groups = {TestGroup.TODO},
             description = "Invalid webhook payload returns 400")
     public void invalidWebhookPayloadReturns400() {
         // TODO: Implement when /api/v1/webhooks/telegram POST is ready

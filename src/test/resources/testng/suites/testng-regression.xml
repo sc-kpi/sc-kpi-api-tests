@@ -13,6 +13,7 @@
         <groups>
             <run>
                 <exclude name="framework"/>
+                <exclude name="todo"/>
             </run>
         </groups>
         <packages>
