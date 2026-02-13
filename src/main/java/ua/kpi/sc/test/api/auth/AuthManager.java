@@ -61,11 +61,14 @@ public final class AuthManager {
                     response.getStatusCode(), response.getBody().asString());
         }
 
-        String accessToken = response.jsonPath().getString("accessToken");
-        String refreshToken = response.jsonPath().getString("refreshToken");
-        long expiresIn = response.jsonPath().getLong("expiresIn");
-
-        Instant expiresAt = Instant.now().plusSeconds(expiresIn - TOKEN_EXPIRY_BUFFER_SECONDS);
+        String accessToken = response.getCookie("access_token");
+        String refreshToken = response.getCookie("refresh_token");
+        if (accessToken == null) {
+            throw new AuthenticationException(context.email(),
+                    response.getStatusCode(), "No access_token cookie in login response");
+        }
+        // Default 1h expiry matching backend JWT config, minus buffer
+        Instant expiresAt = Instant.now().plusSeconds(3600 - TOKEN_EXPIRY_BUFFER_SECONDS);
 
         return new TokenInfo(accessToken, refreshToken, expiresAt);
     }

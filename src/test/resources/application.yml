@@ -7,10 +7,16 @@ execution:
   groups: ""
 
 auth:
-  enabled: false
+  enabled: true
   tokenEndpoint: /api/v1/auth/login
   refreshEndpoint: /api/v1/auth/refresh
-  tierCredentials: {}
+  tierCredentials:
+    BASIC:
+      email: basic@test.kpi.ua
+      password: TestBasic123!
+    ADMIN:
+      email: admin@test.kpi.ua
+      password: TestAdmin123!
 
 retry:
   maxAttempts: 0

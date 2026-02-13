@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Auth User Response",
   "type": "object",
-  "required": ["id", "email", "firstName", "lastName", "capabilityTier"],
+  "required": ["id", "email", "firstName", "lastName", "capabilityTier", "partnerRoles"],
   "properties": {
     "id": {
       "type": "string",
@@ -20,6 +20,23 @@
     "capabilityTier": {
       "type": "integer",
       "minimum": 0
+    },
+    "partnerRoles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["partnerId", "level"],
+        "properties": {
+          "partnerId": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "level": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "additionalProperties": false

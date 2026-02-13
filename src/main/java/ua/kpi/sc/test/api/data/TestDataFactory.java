@@ -7,6 +7,11 @@ import ua.kpi.sc.test.api.model.club.ClubRequest;
 import ua.kpi.sc.test.api.model.document.DocumentRequest;
 import ua.kpi.sc.test.api.model.notification.NotificationSettingsRequest;
 import ua.kpi.sc.test.api.model.project.ProjectRequest;
+import ua.kpi.sc.test.api.model.user.AssignPartnerLevelRequest;
+import ua.kpi.sc.test.api.model.user.ChangePasswordRequest;
+import ua.kpi.sc.test.api.model.user.CreateUserRequest;
+import ua.kpi.sc.test.api.model.user.UpdateStatusRequest;
+import ua.kpi.sc.test.api.model.user.UpdateTierRequest;
 import ua.kpi.sc.test.api.model.user.UserUpdateRequest;
 
 public final class TestDataFactory {
@@ -53,6 +58,59 @@ public final class TestDataFactory {
         return UserUpdateRequest.builder()
                 .firstName(faker.name().firstName())
                 .lastName(faker.name().lastName())
+                .build();
+    }
+
+    public static UpdateTierRequest validUpdateTierRequest() {
+        return UpdateTierRequest.builder()
+                .tier(faker.number().numberBetween(0, 5))
+                .build();
+    }
+
+    public static UpdateStatusRequest validUpdateStatusRequest(boolean active) {
+        return UpdateStatusRequest.builder()
+                .active(active)
+                .build();
+    }
+
+    public static CreateUserRequest validCreateUserRequest() {
+        return CreateUserRequest.builder()
+                .email(faker.internet().emailAddress())
+                .password("Test@" + faker.number().digits(6))
+                .firstName(faker.name().firstName())
+                .lastName(faker.name().lastName())
+                .tier(1)
+                .build();
+    }
+
+    public static CreateUserRequest createUserRequestWithTier(int tier) {
+        return CreateUserRequest.builder()
+                .email(faker.internet().emailAddress())
+                .password("Test@" + faker.number().digits(6))
+                .firstName(faker.name().firstName())
+                .lastName(faker.name().lastName())
+                .tier(tier)
+                .build();
+    }
+
+    public static AssignPartnerLevelRequest validAssignPartnerRequest() {
+        return AssignPartnerLevelRequest.builder()
+                .partnerId(faker.internet().uuid())
+                .level("basic")
+                .build();
+    }
+
+    public static AssignPartnerLevelRequest assignPartnerRequest(String level) {
+        return AssignPartnerLevelRequest.builder()
+                .partnerId(faker.internet().uuid())
+                .level(level)
+                .build();
+    }
+
+    public static ChangePasswordRequest validChangePasswordRequest(String currentPassword) {
+        return ChangePasswordRequest.builder()
+                .currentPassword(currentPassword)
+                .newPassword("NewTest@" + faker.number().digits(6))
                 .build();
     }
 
