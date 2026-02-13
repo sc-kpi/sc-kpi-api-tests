@@ -39,8 +39,11 @@ public class ApiClient {
     }
 
     protected RequestSpecification requestSpec(String authToken) {
-        return requestSpec()
-                .header("Authorization", "Bearer " + authToken);
+        RequestSpecification spec = requestSpec();
+        if (authToken != null) {
+            spec.header("Authorization", "Bearer " + authToken);
+        }
+        return spec;
     }
 
     private Response execute(String method, String path, Supplier<Response> call) {
