@@ -33,7 +33,7 @@ on:
       auth_enabled:
         description: "Enable authentication"
         required: false
-        default: false
+        default: true
         type: boolean
       thread_count:
         description: "Parallel thread count"
@@ -240,26 +240,42 @@ jobs:
           ALLURE_URL="https://sc-kpi.github.io/sc-kpi-api-tests/${{ github.run_number }}/"
           GITHUB_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          PASSED=0; FAILED=0; SKIPPED=0; DURATION=0
-          for f in build/test-results/*/TEST-*.xml; do
-            [[ -f "$f" ]] || continue
-            PASSED=$((PASSED + $(grep -oP 'tests="\K[0-9]+' "$f" | head -1)))
-            FAILED=$((FAILED + $(grep -oP 'failures="\K[0-9]+' "$f" | head -1)))
-            SKIPPED=$((SKIPPED + $(grep -oP 'skipped="\K[0-9]+' "$f" | head -1)))
-            FILE_TIME=$(grep -oP 'time="\K[0-9.]+' "$f" | head -1)
-            DURATION=$(echo "$DURATION + $FILE_TIME" | bc)
-          done
-          PASSED=$((PASSED - FAILED - SKIPPED))
-          TOTAL=$((PASSED + FAILED + SKIPPED))
-          MINUTES=$(echo "$DURATION / 60" | bc)
-          SECONDS=$(echo "$DURATION % 60 / 1" | bc)
-
-          if [[ $FAILED -gt 0 ]]; then
-            STATUS_ICON="🔴"
-            STATUS="FAILED"
+          SUMMARY_FILE="allure-report/widgets/summary.json"
+          if [[ -f "$SUMMARY_FILE" ]]; then
+            PASSED=$(jq -r '.statistic.passed // 0' "$SUMMARY_FILE")
+            FAILED=$(jq -r '.statistic.failed // 0' "$SUMMARY_FILE")
+            BROKEN=$(jq -r '.statistic.broken // 0' "$SUMMARY_FILE")
+            SKIPPED=$(jq -r '.statistic.skipped // 0' "$SUMMARY_FILE")
+            UNKNOWN=$(jq -r '.statistic.unknown // 0' "$SUMMARY_FILE")
+            TOTAL=$(jq -r '.statistic.total // 0' "$SUMMARY_FILE")
+            DURATION_MS=$(jq -r '.time.duration // 0 | floor' "$SUMMARY_FILE")
+            MINUTES=$((DURATION_MS / 60000))
+            SECONDS=$(( (DURATION_MS % 60000) / 1000 ))
           else
-            STATUS_ICON="🟢"
+            PASSED=0; FAILED=0; SKIPPED=0; BROKEN=0; UNKNOWN=0; DURATION=0
+            for f in build/test-results/*/TEST-*.xml; do
+              [[ -f "$f" ]] || continue
+              PASSED=$((PASSED + $(grep -oP 'tests="\K[0-9]+' "$f" | head -1)))
+              FAILED=$((FAILED + $(grep -oP 'failures="\K[0-9]+' "$f" | head -1)))
+              SKIPPED=$((SKIPPED + $(grep -oP 'skipped="\K[0-9]+' "$f" | head -1)))
+              FILE_TIME=$(grep -oP 'time="\K[0-9.]+' "$f" | head -1)
+              DURATION=$(echo "$DURATION + $FILE_TIME" | bc)
+            done
+            PASSED=$((PASSED - FAILED - SKIPPED))
+            TOTAL=$((PASSED + FAILED + SKIPPED))
+            MINUTES=$(echo "$DURATION / 60" | bc)
+            SECONDS=$(echo "$DURATION % 60 / 1" | bc)
+          fi
+
+          SUITE_NAME="${{ inputs.suite }}"
+          SUITE_DISPLAY="${SUITE_NAME^}"
+
+          if [[ $((FAILED + BROKEN)) -gt 0 ]]; then
+            STATUS="FAILED"
+            STATUS_ICON="🔴"
+          else
             STATUS="PASSED"
+            STATUS_ICON="🟢"
           fi
 
           if [[ $TOTAL -gt 0 ]]; then
@@ -272,14 +288,42 @@ jobs:
           EMPTY=$((20 - FILLED))
           BAR=$(printf '█%.0s' $(seq 1 $FILLED 2>/dev/null))$(printf '░%.0s' $(seq 1 $EMPTY 2>/dev/null))
 
-          MESSAGE="<b>${STATUS_ICON} API Regression #${{ github.run_number }} — ${STATUS}</b>
+          SETUP="— suite: ${{ inputs.suite }}"
+          SETUP+=$'\n'"— api_branch: ${{ inputs.api_branch }}"
+          SETUP+=$'\n'"— environment: ${{ inputs.environment }}"
+          SETUP+=$'\n'"— auth_enabled: ${{ inputs.auth_enabled }}"
+          SETUP+=$'\n'"— thread_count: ${{ inputs.thread_count }}"
+          SETUP+=$'\n'"— rerun_failed: ${{ inputs.rerun_failed }}"
+          if [[ -n "${{ inputs.base_url }}" ]]; then
+            SETUP+=$'\n'"— base_url: ${{ inputs.base_url }}"
+          fi
+          if [[ -n "${{ inputs.previous_run_id }}" ]]; then
+            SETUP+=$'\n'"— previous_run_id: ${{ inputs.previous_run_id }}"
+          fi
+
+          MESSAGE="⸻⸻⸻⸻⸻
+          <b>SC KPI API ${SUITE_DISPLAY} — ${STATUS} ${STATUS_ICON}</b>
 
           <code>${BAR}</code>  ${PASS_RATE}% (${PASSED}/${TOTAL})
-          ✅ <b>${PASSED}</b> passed · ❌ <b>${FAILED}</b> failed · ⏭ <b>${SKIPPED}</b> skipped
 
-          📋 <code>${{ inputs.suite }}</code> · 🌍 <code>${{ inputs.environment }}</code> · 🔀 <code>${{ inputs.api_branch }}</code> · ⏱ ${MINUTES}m ${SECONDS}s
+          <b>Suite:</b> ${SUITE_NAME}
+          <b>Environment:</b> ${{ inputs.environment }}
+          <b>Duration:</b> ${MINUTES}m ${SECONDS}s
+          ⸻⸻⸻⸻⸻
+          ✅   Passed: <b>${PASSED}</b>
+          ⛔️   Failed: <b>${FAILED}</b>
+          ⏭️   Skipped: <b>${SKIPPED}</b>
+          ⚠️   Broken: <b>${BROKEN}</b>
+          ⁉️   Unknown: <b>${UNKNOWN}</b>
 
-          <a href=\"${ALLURE_URL}\">📊 Allure Report</a> · <a href=\"${GITHUB_RUN_URL}\">🔗 GitHub Run</a>"
+          — <b>Total tests executed</b>: ${TOTAL}
+          ⸻⸻⸻⸻⸻
+          <b>Workflow setup:</b>
+          ${SETUP}
+          ⸻⸻⸻⸻⸻
+          📊 <a href=\"${ALLURE_URL}\">Allure Report</a>
+          🔗 <a href=\"${GITHUB_RUN_URL}\">GitHub Run</a>
+          ⸻⸻⸻⸻⸻"
 
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_ID}" \
