@@ -262,29 +262,35 @@ jobs:
             STATUS="PASSED"
           fi
 
-          MESSAGE="${STATUS_ICON} <b>API Regression — ${STATUS}</b>
+          if [[ $TOTAL -gt 0 ]]; then
+            PASS_RATE=$((PASSED * 100 / TOTAL))
+            FILLED=$((PASS_RATE / 5))
+          else
+            PASS_RATE=0
+            FILLED=0
+          fi
+          EMPTY=$((20 - FILLED))
+          BAR=$(printf '█%.0s' $(seq 1 $FILLED 2>/dev/null))$(printf '░%.0s' $(seq 1 $EMPTY 2>/dev/null))
 
-          📋 <b>Suite:</b> ${{ inputs.suite }}
-          🌍 <b>Environment:</b> ${{ inputs.environment }}
-          🔀 <b>Branch:</b> ${{ inputs.api_branch }}
-          ⏱ <b>Duration:</b> ${MINUTES}m ${SECONDS}s
+          MESSAGE="<b>${STATUS_ICON} API Regression #${{ github.run_number }} — ${STATUS}</b>
 
-          ✅ Passed: <b>${PASSED}</b>
-          ❌ Failed: <b>${FAILED}</b>
-          ⏭ Skipped: <b>${SKIPPED}</b>
-          📊 Total: <b>${TOTAL}</b>
+          <code>${BAR}</code>  ${PASS_RATE}% (${PASSED}/${TOTAL})
+          ✅ <b>${PASSED}</b> passed · ❌ <b>${FAILED}</b> failed · ⏭ <b>${SKIPPED}</b> skipped
 
-          📎 <a href=\"${ALLURE_URL}\">Allure Report</a>
-          📎 <a href=\"${GITHUB_RUN_URL}\">GitHub Run</a>"
+          📋 <code>${{ inputs.suite }}</code> · 🌍 <code>${{ inputs.environment }}</code> · 🔀 <code>${{ inputs.api_branch }}</code> · ⏱ ${MINUTES}m ${SECONDS}s
+
+          <a href=\"${ALLURE_URL}\">📊 Allure Report</a> · <a href=\"${GITHUB_RUN_URL}\">🔗 GitHub Run</a>"
 
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d message_thread_id="${TELEGRAM_TOPIC_ID}" \
             -d parse_mode="HTML" \
             -d disable_web_page_preview="true" \
             --data-urlencode "text=${MESSAGE}" || echo "::warning::Telegram notification failed"
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOPIC_ID: ${{ secrets.TELEGRAM_TOPIC_ID }}
 
       - name: Add Job Summary
         if: always()
