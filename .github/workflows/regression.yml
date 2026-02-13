@@ -33,7 +33,7 @@ on:
       auth_enabled:
         description: "Enable authentication"
         required: false
-        default: false
+        default: true
         type: boolean
       thread_count:
         description: "Parallel thread count"
@@ -45,6 +45,16 @@ on:
           - "3"
           - "5"
           - "10"
+      rerun_failed:
+        description: "Rerun only failed tests from a previous run"
+        required: false
+        default: false
+        type: boolean
+      previous_run_id:
+        description: "Run ID to rerun failed tests from (required if rerun_failed=true)"
+        required: false
+        default: ""
+        type: string
 
 concurrency:
   group: regression-${{ github.run_id }}
@@ -53,6 +63,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  actions: read
 
 jobs:
   api-tests:
@@ -109,7 +120,18 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Download previous testng-output
+        if: inputs.rerun_failed == true && inputs.previous_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: testng-output
+          path: build/testng-output/
+          run-id: ${{ inputs.previous_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run tests
+        id: run-tests
+        if: inputs.rerun_failed == false
         run: |
           ARGS="./gradlew ${{ inputs.suite }}"
           ARGS="$ARGS -Denv=${{ inputs.environment }}"
@@ -122,6 +144,49 @@ jobs:
           fi
           echo "Running: $ARGS"
           eval $ARGS
+
+      - name: Auto-retry failed tests
+        id: auto-retry
+        if: inputs.rerun_failed == false && always() && steps.run-tests.outcome == 'failure'
+        run: |
+          FAILED_XML="build/testng-output/testng-failed.xml"
+          if [[ -f "$FAILED_XML" ]]; then
+            echo "Found testng-failed.xml, rerunning failed tests..."
+            cp "$FAILED_XML" src/test/resources/testng/suites/testng-failed.xml
+            ./gradlew test -Dsuite=testng-failed.xml \
+              -Denv=${{ inputs.environment }} \
+              -DthreadCount=${{ inputs.thread_count }} \
+              -Dauth.enabled=${{ inputs.auth_enabled }} \
+              -DignoreFailures=true --no-daemon
+          else
+            echo "No testng-failed.xml found, skipping auto-retry"
+          fi
+
+      - name: Rerun failed tests (manual)
+        id: manual-rerun
+        if: inputs.rerun_failed == true
+        run: |
+          FAILED_XML="build/testng-output/testng-failed.xml"
+          if [[ ! -f "$FAILED_XML" ]]; then
+            echo "::error::testng-failed.xml not found. Make sure the previous run ID is correct and had failures."
+            exit 1
+          fi
+          echo "Rerunning failed tests from run ${{ inputs.previous_run_id }}..."
+          cp "$FAILED_XML" src/test/resources/testng/suites/testng-failed.xml
+          ./gradlew test -Dsuite=testng-failed.xml \
+            -Denv=${{ inputs.environment }} \
+            -DthreadCount=${{ inputs.thread_count }} \
+            -Dauth.enabled=${{ inputs.auth_enabled }} \
+            -DignoreFailures=true --no-daemon
+
+      - name: Upload TestNG output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testng-output
+          path: build/testng-output/
+          retention-days: 14
+          if-no-files-found: ignore
 
       - name: Upload Allure results
         if: always()
@@ -168,6 +233,134 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+
+      - name: Telegram notification
+        if: always()
+        run: |
+          ALLURE_URL="https://sc-kpi.github.io/sc-kpi-api-tests/${{ github.run_number }}/"
+          GITHUB_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          SUMMARY_FILE="allure-report/widgets/summary.json"
+          if [[ -f "$SUMMARY_FILE" ]]; then
+            PASSED=$(jq -r '.statistic.passed // 0' "$SUMMARY_FILE")
+            FAILED=$(jq -r '.statistic.failed // 0' "$SUMMARY_FILE")
+            BROKEN=$(jq -r '.statistic.broken // 0' "$SUMMARY_FILE")
+            SKIPPED=$(jq -r '.statistic.skipped // 0' "$SUMMARY_FILE")
+            UNKNOWN=$(jq -r '.statistic.unknown // 0' "$SUMMARY_FILE")
+            TOTAL=$(jq -r '.statistic.total // 0' "$SUMMARY_FILE")
+            DURATION_MS=$(jq -r '.time.duration // 0 | floor' "$SUMMARY_FILE")
+            TOTAL_SECS=$((DURATION_MS / 1000))
+            HOURS=$((TOTAL_SECS / 3600))
+            MINUTES=$(( (TOTAL_SECS % 3600) / 60 ))
+            SECONDS=$((TOTAL_SECS % 60))
+          else
+            PASSED=0; FAILED=0; SKIPPED=0; BROKEN=0; UNKNOWN=0; DURATION=0
+            for f in build/test-results/*/TEST-*.xml; do
+              [[ -f "$f" ]] || continue
+              PASSED=$((PASSED + $(grep -oP 'tests="\K[0-9]+' "$f" | head -1)))
+              FAILED=$((FAILED + $(grep -oP 'failures="\K[0-9]+' "$f" | head -1)))
+              SKIPPED=$((SKIPPED + $(grep -oP 'skipped="\K[0-9]+' "$f" | head -1)))
+              FILE_TIME=$(grep -oP 'time="\K[0-9.]+' "$f" | head -1)
+              DURATION=$(echo "$DURATION + $FILE_TIME" | bc)
+            done
+            PASSED=$((PASSED - FAILED - SKIPPED))
+            TOTAL=$((PASSED + FAILED + SKIPPED))
+            TOTAL_SECS=$(echo "$DURATION / 1" | bc)
+            HOURS=$((TOTAL_SECS / 3600))
+            MINUTES=$(( (TOTAL_SECS % 3600) / 60 ))
+            SECONDS=$((TOTAL_SECS % 60))
+          fi
+
+          SUITE_NAME="${{ inputs.suite }}"
+          SUITE_DISPLAY="${SUITE_NAME^}"
+
+          if [[ $((FAILED + BROKEN)) -gt 0 ]]; then
+            STATUS="FAILED"
+            STATUS_ICON="🔴"
+          else
+            STATUS="PASSED"
+            STATUS_ICON="🟢"
+          fi
+
+          if [[ $TOTAL -gt 0 ]]; then
+            PASS_RATE=$((PASSED * 100 / TOTAL))
+            FILLED=$((PASS_RATE / 5))
+          else
+            PASS_RATE=0
+            FILLED=0
+          fi
+          EMPTY=$((20 - FILLED))
+          BAR=$(printf '█%.0s' $(seq 1 $FILLED 2>/dev/null))$(printf '░%.0s' $(seq 1 $EMPTY 2>/dev/null))
+
+          WF_START=$(gh run view ${{ github.run_id }} --json createdAt -q '.createdAt')
+          START_EPOCH=$(date -d "$WF_START" +%s)
+          NOW_EPOCH=$(date +%s)
+          WF_ELAPSED=$((NOW_EPOCH - START_EPOCH))
+          WF_HOURS=$((WF_ELAPSED / 3600))
+          WF_MINUTES=$(( (WF_ELAPSED % 3600) / 60 ))
+          WF_SECONDS=$((WF_ELAPSED % 60))
+
+          if [[ $HOURS -gt 0 ]]; then
+            DURATION_FMT="${HOURS}h ${MINUTES}m ${SECONDS}s"
+          else
+            DURATION_FMT="${MINUTES}m ${SECONDS}s"
+          fi
+
+          if [[ $WF_HOURS -gt 0 ]]; then
+            WF_TIME_FMT="${WF_HOURS}h ${WF_MINUTES}m ${WF_SECONDS}s"
+          else
+            WF_TIME_FMT="${WF_MINUTES}m ${WF_SECONDS}s"
+          fi
+
+          SETUP="— suite: ${{ inputs.suite }}"
+          SETUP+=$'\n'"— api_branch: ${{ inputs.api_branch }}"
+          SETUP+=$'\n'"— environment: ${{ inputs.environment }}"
+          SETUP+=$'\n'"— auth_enabled: ${{ inputs.auth_enabled }}"
+          SETUP+=$'\n'"— thread_count: ${{ inputs.thread_count }}"
+          SETUP+=$'\n'"— rerun_failed: ${{ inputs.rerun_failed }}"
+          if [[ -n "${{ inputs.base_url }}" ]]; then
+            SETUP+=$'\n'"— base_url: ${{ inputs.base_url }}"
+          fi
+          if [[ -n "${{ inputs.previous_run_id }}" ]]; then
+            SETUP+=$'\n'"— previous_run_id: ${{ inputs.previous_run_id }}"
+          fi
+
+          MESSAGE="⸻⸻⸻⸻⸻
+          <b>SC KPI API ${SUITE_DISPLAY} — ${STATUS} ${STATUS_ICON}</b>
+
+          <code>${BAR}</code>  ${PASS_RATE}% (${PASSED}/${TOTAL})
+
+          <b>Suite:</b> ${SUITE_NAME}
+          <b>Environment:</b> ${{ inputs.environment }}
+          <b>Duration:</b> ${DURATION_FMT}
+          <b>Workflow time:</b> ${WF_TIME_FMT}
+          ⸻⸻⸻⸻⸻
+          ✅   Passed: <b>${PASSED}</b>
+          ⛔️   Failed: <b>${FAILED}</b>
+          ⏭️   Skipped: <b>${SKIPPED}</b>
+          ⚠️   Broken: <b>${BROKEN}</b>
+          ⁉️   Unknown: <b>${UNKNOWN}</b>
+
+          — <b>Total tests executed</b>: ${TOTAL}
+          ⸻⸻⸻⸻⸻
+          <b>Workflow setup:</b>
+          ${SETUP}
+          ⸻⸻⸻⸻⸻
+          📊 <a href=\"${ALLURE_URL}\">Allure Report</a>
+          🔗 <a href=\"${GITHUB_RUN_URL}\">GitHub Run</a>
+          ⸻⸻⸻⸻⸻"
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d message_thread_id="${TELEGRAM_TOPIC_ID}" \
+            -d parse_mode="HTML" \
+            -d disable_web_page_preview="true" \
+            --data-urlencode "text=${MESSAGE}" || echo "::warning::Telegram notification failed"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOPIC_ID: ${{ secrets.TELEGRAM_TOPIC_ID }}
+          GH_TOKEN: ${{ github.token }}
 
       - name: Add Job Summary
         if: always()
