@@ -13,6 +13,11 @@ public final class Endpoint {
     public static final String USERS = "/api/v1/users";
     public static final String USER_BY_ID = USERS + "/{id}";
     public static final String USER_ME = USERS + "/me";
+    public static final String USER_TIER = USER_BY_ID + "/tier";
+    public static final String USER_STATUS = USER_BY_ID + "/status";
+    public static final String USER_PARTNERS = USER_BY_ID + "/partners";
+    public static final String USER_PARTNER = USER_PARTNERS + "/{partnerId}";
+    public static final String USER_ME_PASSWORD = USER_ME + "/password";
 
     // Clubs
     public static final String CLUBS = "/api/v1/clubs";

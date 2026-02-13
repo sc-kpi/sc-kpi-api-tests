@@ -1,7 +1,5 @@
 package ua.kpi.sc.test.api.model.user;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserResponse {
-    private String id;
-    private String email;
-    private String firstName;
-    private String lastName;
-    private int capabilityTier;
+public class UpdateStatusRequest {
     private boolean active;
-    private String createdAt;
-    private List<PartnerMemberResponse> partnerRoles;
 }
