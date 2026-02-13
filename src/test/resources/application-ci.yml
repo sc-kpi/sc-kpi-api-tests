@@ -22,3 +22,6 @@ retry:
 cleanup:
   enabled: true
   strategy: after_suite
+
+mailpit:
+  baseUrl: http://localhost:8025

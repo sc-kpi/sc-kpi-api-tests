@@ -12,6 +12,7 @@ import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -128,7 +129,36 @@ public class ApiClient {
         return execute("GET", path, () -> requestSpec().cookie(cookieName, cookieValue).get(path));
     }
 
+    public Response patchEmpty(String path, String authToken) {
+        return execute("PATCH", path, () -> requestSpec(authToken).patch(path));
+    }
+
+    public Response patchRaw(String path, String rawBody, String authToken) {
+        return execute("PATCH", path, () -> requestSpec(authToken).body(rawBody).patch(path));
+    }
+
     public Response postRawWithContentType(String path, String rawBody, String contentType) {
         return execute("POST", path, () -> requestSpec().contentType(contentType).body(rawBody).post(path));
+    }
+
+    public Response getNoRedirect(String path) {
+        return execute("GET", path, () -> requestSpec().redirects().follow(false).get(path));
+    }
+
+    public Response getWithQueryParamsAndCookie(String path, Map<String, String> queryParams,
+                                                String cookieName, String cookieValue) {
+        return execute("GET", path, () -> requestSpec()
+                .queryParams(queryParams)
+                .cookie(cookieName, cookieValue)
+                .get(path));
+    }
+
+    public Response getNoRedirectWithQueryParamsAndCookie(String path, Map<String, String> queryParams,
+                                                          String cookieName, String cookieValue) {
+        return execute("GET", path, () -> requestSpec()
+                .redirects().follow(false)
+                .queryParams(queryParams)
+                .cookie(cookieName, cookieValue)
+                .get(path));
     }
 }

@@ -32,6 +32,10 @@ public final class Config {
         return ConfigurationManager.getConfig().getCleanup();
     }
 
+    public static TestConfig.MailpitConfig mailpit() {
+        return ConfigurationManager.getConfig().getMailpit();
+    }
+
     public static TestConfig get() {
         return ConfigurationManager.getConfig();
     }

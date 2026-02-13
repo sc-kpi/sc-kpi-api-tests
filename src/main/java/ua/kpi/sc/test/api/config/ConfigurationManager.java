@@ -79,6 +79,10 @@ public final class ConfigurationManager {
         if (overlay.getExecution().getThreadCount() != 1) {
             base.getExecution().setThreadCount(overlay.getExecution().getThreadCount());
         }
+        if (overlay.getMailpit() != null && overlay.getMailpit().getBaseUrl() != null
+                && !overlay.getMailpit().getBaseUrl().isEmpty()) {
+            base.setMailpit(overlay.getMailpit());
+        }
     }
 
     private static void applySystemPropertyOverrides(TestConfig config) {

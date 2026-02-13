@@ -8,6 +8,10 @@ public final class Endpoint {
     public static final String AUTH_REFRESH = AUTH + "/refresh";
     public static final String AUTH_LOGOUT = AUTH + "/logout";
     public static final String AUTH_ME = AUTH + "/me";
+    public static final String AUTH_FORGOT_PASSWORD = AUTH + "/forgot-password";
+    public static final String AUTH_RESET_PASSWORD = AUTH + "/reset-password";
+    public static final String AUTH_OAUTH2_GOOGLE = AUTH + "/oauth2/google";
+    public static final String AUTH_OAUTH2_CALLBACK_GOOGLE = AUTH + "/oauth2/callback/google";
 
     // Users
     public static final String USERS = "/api/v1/users";

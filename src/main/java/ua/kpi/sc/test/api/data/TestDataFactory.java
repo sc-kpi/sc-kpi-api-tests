@@ -1,8 +1,10 @@
 package ua.kpi.sc.test.api.data;
 
 import net.datafaker.Faker;
+import ua.kpi.sc.test.api.model.auth.ForgotPasswordRequest;
 import ua.kpi.sc.test.api.model.auth.LoginRequest;
 import ua.kpi.sc.test.api.model.auth.RegisterRequest;
+import ua.kpi.sc.test.api.model.auth.ResetPasswordRequest;
 import ua.kpi.sc.test.api.model.club.ClubRequest;
 import ua.kpi.sc.test.api.model.document.DocumentRequest;
 import ua.kpi.sc.test.api.model.notification.NotificationSettingsRequest;
@@ -104,6 +106,28 @@ public final class TestDataFactory {
         return AssignPartnerLevelRequest.builder()
                 .partnerId(faker.internet().uuid())
                 .level(level)
+                .build();
+    }
+
+    // Forgot Password
+    public static ForgotPasswordRequest validForgotPasswordRequest(String email) {
+        return ForgotPasswordRequest.builder()
+                .email(email)
+                .build();
+    }
+
+    // Reset Password
+    public static ResetPasswordRequest validResetPasswordRequest(String token) {
+        return ResetPasswordRequest.builder()
+                .token(token)
+                .newPassword("NewTest@" + faker.number().digits(6))
+                .build();
+    }
+
+    public static ResetPasswordRequest resetPasswordRequest(String token, String newPassword) {
+        return ResetPasswordRequest.builder()
+                .token(token)
+                .newPassword(newPassword)
                 .build();
     }
 
