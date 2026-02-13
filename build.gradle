@@ -66,6 +66,8 @@ def suiteFile = System.getProperty('suite', 'testng-smoke.xml')
 test {
     useTestNG {
         suiteXmlFiles = [file("src/test/resources/testng/suites/${suiteFile}")]
+        useDefaultListeners = true
+        outputDirectory = file("${project.buildDir}/testng-output")
 
         def includeGroups = System.getProperty('includeGroups')
         def excludeGroups = System.getProperty('excludeGroups')
@@ -131,6 +133,8 @@ tasks.register('smoke', Test) {
     configureTestTask(it)
     useTestNG {
         suiteXmlFiles = [file('src/test/resources/testng/suites/testng-smoke.xml')]
+        useDefaultListeners = true
+        outputDirectory = file("${project.buildDir}/testng-output")
     }
 }
 
@@ -140,6 +144,8 @@ tasks.register('regression', Test) {
     configureTestTask(it)
     useTestNG {
         suiteXmlFiles = [file('src/test/resources/testng/suites/testng-regression.xml')]
+        useDefaultListeners = true
+        outputDirectory = file("${project.buildDir}/testng-output")
     }
 }
 
@@ -149,6 +155,8 @@ tasks.register('all', Test) {
     configureTestTask(it)
     useTestNG {
         suiteXmlFiles = [file('src/test/resources/testng/suites/testng-all.xml')]
+        useDefaultListeners = true
+        outputDirectory = file("${project.buildDir}/testng-output")
     }
 }
 

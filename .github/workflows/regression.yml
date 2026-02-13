@@ -45,6 +45,16 @@ on:
           - "3"
           - "5"
           - "10"
+      rerun_failed:
+        description: "Rerun only failed tests from a previous run"
+        required: false
+        default: false
+        type: boolean
+      previous_run_id:
+        description: "Run ID to rerun failed tests from (required if rerun_failed=true)"
+        required: false
+        default: ""
+        type: string
 
 concurrency:
   group: regression-${{ github.run_id }}
@@ -53,6 +63,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  actions: read
 
 jobs:
   api-tests:
@@ -109,7 +120,18 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Download previous testng-output
+        if: inputs.rerun_failed == true && inputs.previous_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: testng-output
+          path: build/testng-output/
+          run-id: ${{ inputs.previous_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run tests
+        id: run-tests
+        if: inputs.rerun_failed == false
         run: |
           ARGS="./gradlew ${{ inputs.suite }}"
           ARGS="$ARGS -Denv=${{ inputs.environment }}"
@@ -122,6 +144,49 @@ jobs:
           fi
           echo "Running: $ARGS"
           eval $ARGS
+
+      - name: Auto-retry failed tests
+        id: auto-retry
+        if: inputs.rerun_failed == false && always() && steps.run-tests.outcome == 'failure'
+        run: |
+          FAILED_XML="build/testng-output/testng-failed.xml"
+          if [[ -f "$FAILED_XML" ]]; then
+            echo "Found testng-failed.xml, rerunning failed tests..."
+            cp "$FAILED_XML" src/test/resources/testng/suites/testng-failed.xml
+            ./gradlew test -Dsuite=testng-failed.xml \
+              -Denv=${{ inputs.environment }} \
+              -DthreadCount=${{ inputs.thread_count }} \
+              -Dauth.enabled=${{ inputs.auth_enabled }} \
+              -DignoreFailures=true --no-daemon
+          else
+            echo "No testng-failed.xml found, skipping auto-retry"
+          fi
+
+      - name: Rerun failed tests (manual)
+        id: manual-rerun
+        if: inputs.rerun_failed == true
+        run: |
+          FAILED_XML="build/testng-output/testng-failed.xml"
+          if [[ ! -f "$FAILED_XML" ]]; then
+            echo "::error::testng-failed.xml not found. Make sure the previous run ID is correct and had failures."
+            exit 1
+          fi
+          echo "Rerunning failed tests from run ${{ inputs.previous_run_id }}..."
+          cp "$FAILED_XML" src/test/resources/testng/suites/testng-failed.xml
+          ./gradlew test -Dsuite=testng-failed.xml \
+            -Denv=${{ inputs.environment }} \
+            -DthreadCount=${{ inputs.thread_count }} \
+            -Dauth.enabled=${{ inputs.auth_enabled }} \
+            -DignoreFailures=true --no-daemon
+
+      - name: Upload TestNG output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testng-output
+          path: build/testng-output/
+          retention-days: 14
+          if-no-files-found: ignore
 
       - name: Upload Allure results
         if: always()
@@ -168,6 +233,58 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+
+      - name: Telegram notification
+        if: always()
+        run: |
+          ALLURE_URL="https://sc-kpi.github.io/sc-kpi-api-tests/${{ github.run_number }}/"
+          GITHUB_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          PASSED=0; FAILED=0; SKIPPED=0; DURATION=0
+          for f in build/test-results/*/TEST-*.xml; do
+            [[ -f "$f" ]] || continue
+            PASSED=$((PASSED + $(grep -oP 'tests="\K[0-9]+' "$f" | head -1)))
+            FAILED=$((FAILED + $(grep -oP 'failures="\K[0-9]+' "$f" | head -1)))
+            SKIPPED=$((SKIPPED + $(grep -oP 'skipped="\K[0-9]+' "$f" | head -1)))
+            FILE_TIME=$(grep -oP 'time="\K[0-9.]+' "$f" | head -1)
+            DURATION=$(echo "$DURATION + $FILE_TIME" | bc)
+          done
+          PASSED=$((PASSED - FAILED - SKIPPED))
+          TOTAL=$((PASSED + FAILED + SKIPPED))
+          MINUTES=$(echo "$DURATION / 60" | bc)
+          SECONDS=$(echo "$DURATION % 60 / 1" | bc)
+
+          if [[ $FAILED -gt 0 ]]; then
+            STATUS_ICON="🔴"
+            STATUS="FAILED"
+          else
+            STATUS_ICON="🟢"
+            STATUS="PASSED"
+          fi
+
+          MESSAGE="${STATUS_ICON} <b>API Regression — ${STATUS}</b>
+
+          📋 <b>Suite:</b> ${{ inputs.suite }}
+          🌍 <b>Environment:</b> ${{ inputs.environment }}
+          🔀 <b>Branch:</b> ${{ inputs.api_branch }}
+          ⏱ <b>Duration:</b> ${MINUTES}m ${SECONDS}s
+
+          ✅ Passed: <b>${PASSED}</b>
+          ❌ Failed: <b>${FAILED}</b>
+          ⏭ Skipped: <b>${SKIPPED}</b>
+          📊 Total: <b>${TOTAL}</b>
+
+          📎 <a href=\"${ALLURE_URL}\">Allure Report</a>
+          📎 <a href=\"${GITHUB_RUN_URL}\">GitHub Run</a>"
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d parse_mode="HTML" \
+            -d disable_web_page_preview="true" \
+            --data-urlencode "text=${MESSAGE}" || echo "::warning::Telegram notification failed"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: Add Job Summary
         if: always()

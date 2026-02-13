@@ -7,6 +7,7 @@
         <listener class-name="ua.kpi.sc.test.api.listener.SuiteListener"/>
         <listener class-name="ua.kpi.sc.test.api.listener.AllureTestListener"/>
         <listener class-name="ua.kpi.sc.test.api.listener.MethodInterceptor"/>
+        <listener class-name="ua.kpi.sc.test.api.listener.RetryTransformer"/>
     </listeners>
 
     <test name="Smoke">
