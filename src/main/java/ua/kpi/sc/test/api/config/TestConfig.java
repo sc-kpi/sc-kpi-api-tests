@@ -17,6 +17,7 @@ public class TestConfig {
     private AuthConfig auth = new AuthConfig();
     private RetryConfig retry = new RetryConfig();
     private CleanupConfig cleanup = new CleanupConfig();
+    private MailpitConfig mailpit = new MailpitConfig();
 
     @Data
     @NoArgsConstructor
@@ -59,5 +60,12 @@ public class TestConfig {
     public static class CleanupConfig {
         private boolean enabled = true;
         private String strategy = "after_suite";
+    }
+
+    @Data
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class MailpitConfig {
+        private String baseUrl = "http://localhost:8025";
     }
 }

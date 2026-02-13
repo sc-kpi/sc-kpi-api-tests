@@ -4,8 +4,10 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import ua.kpi.sc.test.api.client.ApiClient;
 import ua.kpi.sc.test.api.config.Endpoint;
+import ua.kpi.sc.test.api.model.auth.ForgotPasswordRequest;
 import ua.kpi.sc.test.api.model.auth.LoginRequest;
 import ua.kpi.sc.test.api.model.auth.RegisterRequest;
+import ua.kpi.sc.test.api.model.auth.ResetPasswordRequest;
 import ua.kpi.sc.test.api.util.JsonHelper;
 
 public class AuthClient extends ApiClient {
@@ -63,5 +65,37 @@ public class AuthClient extends ApiClient {
     @Step("POST /auth/login — Login with Content-Type: {contentType}")
     public Response loginWithContentType(LoginRequest request, String contentType) {
         return postRawWithContentType(Endpoint.AUTH_LOGIN, JsonHelper.toJson(request), contentType);
+    }
+
+    @Step("POST /auth/forgot-password — Request password reset for: {request.email}")
+    public Response forgotPassword(ForgotPasswordRequest request) {
+        return post(Endpoint.AUTH_FORGOT_PASSWORD, request);
+    }
+
+    @Step("POST /auth/forgot-password — Request with raw body")
+    public Response forgotPasswordRaw(String rawBody) {
+        return postRaw(Endpoint.AUTH_FORGOT_PASSWORD, rawBody);
+    }
+
+    @Step("POST /auth/reset-password — Reset password with token")
+    public Response resetPassword(ResetPasswordRequest request) {
+        return post(Endpoint.AUTH_RESET_PASSWORD, request);
+    }
+
+    @Step("POST /auth/reset-password — Reset with raw body")
+    public Response resetPasswordRaw(String rawBody) {
+        return postRaw(Endpoint.AUTH_RESET_PASSWORD, rawBody);
+    }
+
+    @Step("GET /auth/oauth2/google — Get Google OAuth redirect URL")
+    public Response googleOAuthRedirect() {
+        return getNoRedirect(Endpoint.AUTH_OAUTH2_GOOGLE);
+    }
+
+    @Step("GET /auth/oauth2/callback/google — Handle Google OAuth callback")
+    public Response googleOAuthCallback(String code, String state, String stateCookie) {
+        return getNoRedirectWithQueryParamsAndCookie(Endpoint.AUTH_OAUTH2_CALLBACK_GOOGLE,
+                java.util.Map.of("code", code, "state", state),
+                "oauth_state", stateCookie);
     }
 }
