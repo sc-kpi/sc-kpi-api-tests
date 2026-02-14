@@ -3,7 +3,6 @@ package ua.kpi.sc.test.api.tests.auth;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.restassured.response.Response;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ua.kpi.sc.test.api.client.mail.MailpitClient;
 import ua.kpi.sc.test.api.client.mail.MailpitHelper;
@@ -23,11 +22,6 @@ public class AuthResetPasswordTest extends BaseAuthTest {
 
     private final MailpitClient mailpitClient = new MailpitClient();
     private final MailpitHelper mailpitHelper = new MailpitHelper(authClient, mailpitClient);
-
-    @BeforeMethod
-    public void cleanMailbox() {
-        mailpitClient.deleteAllMessages();
-    }
 
     // ==================== SMOKE ====================
 

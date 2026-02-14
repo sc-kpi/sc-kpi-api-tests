@@ -3,7 +3,6 @@ package ua.kpi.sc.test.api.tests.auth;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.restassured.response.Response;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ua.kpi.sc.test.api.client.mail.MailpitClient;
 import ua.kpi.sc.test.api.config.Endpoint;
@@ -20,11 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AuthForgotPasswordTest extends BaseAuthTest {
 
     private final MailpitClient mailpitClient = new MailpitClient();
-
-    @BeforeMethod
-    public void cleanMailbox() {
-        mailpitClient.deleteAllMessages();
-    }
 
     // ==================== SMOKE ====================
 
