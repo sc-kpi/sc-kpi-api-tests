@@ -24,7 +24,8 @@ jobs:
       environment: ci
       base_url: ""
       auth_enabled: true
-      thread_count: "5"
+      thread_count: "10"
       rerun_failed: false
       previous_run_id: ""
+      caller_event: ${{ github.event_name }}
     secrets: inherit

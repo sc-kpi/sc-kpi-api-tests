@@ -38,7 +38,7 @@ on:
       thread_count:
         description: "Parallel thread count"
         required: true
-        default: "5"
+        default: "10"
         type: choice
         options:
           - "1"
@@ -52,6 +52,11 @@ on:
         type: boolean
       previous_run_id:
         description: "Run ID to rerun failed tests from (required if rerun_failed=true)"
+        required: false
+        default: ""
+        type: string
+      caller_event:
+        description: "Internal: event name from calling workflow"
         required: false
         default: ""
         type: string
@@ -81,12 +86,16 @@ on:
       thread_count:
         type: string
         required: true
-        default: "5"
+        default: "10"
       rerun_failed:
         type: boolean
         required: false
         default: false
       previous_run_id:
+        type: string
+        required: false
+        default: ""
+      caller_event:
         type: string
         required: false
         default: ""
@@ -167,12 +176,12 @@ jobs:
       - name: Run tests
         id: run-tests
         if: inputs.rerun_failed == false
+        continue-on-error: true
         run: |
           ARGS="./gradlew ${{ inputs.suite }}"
           ARGS="$ARGS -Denv=${{ inputs.environment }}"
           ARGS="$ARGS -DthreadCount=${{ inputs.thread_count }}"
           ARGS="$ARGS -Dauth.enabled=${{ inputs.auth_enabled }}"
-          ARGS="$ARGS -DignoreFailures=true"
           ARGS="$ARGS --no-daemon"
           if [[ -n "${{ inputs.base_url }}" ]]; then
             ARGS="$ARGS -DbaseUrl=${{ inputs.base_url }}"
@@ -180,9 +189,21 @@ jobs:
           echo "Running: $ARGS"
           eval $ARGS
 
+      - name: Capture initial failure count
+        if: always() && steps.run-tests.outcome == 'failure'
+        run: |
+          FAILED_XML="build/testng-output/testng-failed.xml"
+          if [[ -f "$FAILED_XML" ]]; then
+            INITIAL_FAILED=$(grep -c '<include name=' "$FAILED_XML" || echo 0)
+            echo "INITIAL_FAILED=$INITIAL_FAILED" >> "$GITHUB_ENV"
+          else
+            echo "INITIAL_FAILED=0" >> "$GITHUB_ENV"
+          fi
+
       - name: Auto-retry failed tests
         id: auto-retry
-        if: inputs.rerun_failed == false && always() && steps.run-tests.outcome == 'failure'
+        if: inputs.rerun_failed == false && steps.run-tests.outcome == 'failure'
+        continue-on-error: true
         run: |
           FAILED_XML="build/testng-output/testng-failed.xml"
           if [[ -f "$FAILED_XML" ]]; then
@@ -192,7 +213,7 @@ jobs:
               -Denv=${{ inputs.environment }} \
               -DthreadCount=${{ inputs.thread_count }} \
               -Dauth.enabled=${{ inputs.auth_enabled }} \
-              -DignoreFailures=true --no-daemon
+              --no-daemon
           else
             echo "No testng-failed.xml found, skipping auto-retry"
           fi
@@ -200,6 +221,7 @@ jobs:
       - name: Rerun failed tests (manual)
         id: manual-rerun
         if: inputs.rerun_failed == true
+        continue-on-error: true
         run: |
           FAILED_XML="build/testng-output/testng-failed.xml"
           if [[ ! -f "$FAILED_XML" ]]; then
@@ -212,7 +234,23 @@ jobs:
             -Denv=${{ inputs.environment }} \
             -DthreadCount=${{ inputs.thread_count }} \
             -Dauth.enabled=${{ inputs.auth_enabled }} \
-            -DignoreFailures=true --no-daemon
+            --no-daemon
+
+      - name: Test outcome
+        if: always()
+        run: |
+          INITIAL="${{ steps.run-tests.outcome }}"
+          RETRY="${{ steps.auto-retry.outcome }}"
+          MANUAL="${{ steps.manual-rerun.outcome }}"
+          if [[ "$MANUAL" != "skipped" && -n "$MANUAL" ]]; then
+            echo "RUN_TYPE=manual-rerun" >> "$GITHUB_ENV"
+            echo "RERUN_OUTCOME=$MANUAL" >> "$GITHUB_ENV"
+          elif [[ "$INITIAL" == "failure" && "$RETRY" != "skipped" ]]; then
+            echo "RUN_TYPE=auto-retry" >> "$GITHUB_ENV"
+            echo "RERUN_OUTCOME=$RETRY" >> "$GITHUB_ENV"
+          else
+            echo "RUN_TYPE=initial" >> "$GITHUB_ENV"
+          fi
 
       - name: Upload TestNG output
         if: always()
@@ -363,6 +401,34 @@ jobs:
             SETUP+=$'\n'"— previous_run_id: ${{ inputs.previous_run_id }}"
           fi
 
+          if [[ "$RUN_TYPE" == "auto-retry" ]]; then
+            if [[ "$RERUN_OUTCOME" == "success" ]]; then
+              RETRY_LINE="🔄  <b>Auto-retry:</b> ${INITIAL_FAILED} initially failed → all recovered ✅"
+            else
+              STILL_FAILED=$((FAILED + BROKEN))
+              RECOVERED=$(( ${INITIAL_FAILED:-0} - STILL_FAILED ))
+              if [[ $RECOVERED -lt 0 ]]; then RECOVERED=0; fi
+              RETRY_LINE="🔄  <b>Auto-retry:</b> ${INITIAL_FAILED} initially failed → ${RECOVERED} recovered, ${STILL_FAILED} still failing"
+            fi
+          elif [[ "$RUN_TYPE" == "manual-rerun" ]]; then
+            if [[ "$RERUN_OUTCOME" == "success" ]]; then
+              RETRY_LINE="🔄  <b>Manual rerun:</b> passed ✅"
+            else
+              RETRY_LINE="🔄  <b>Manual rerun:</b> failed ❌"
+            fi
+          else
+            RETRY_LINE="🔄  <b>Retry:</b> not needed"
+          fi
+
+          ACTOR="${{ github.triggering_actor }}"
+          CALLER_EVENT="${{ inputs.caller_event }}"
+          EVENT="${{ github.event_name }}"
+          if [[ "$EVENT" == "schedule" || "$CALLER_EVENT" == "schedule" ]]; then
+            LAUNCHED_BY="👤 <b>Launched by:</b> scheduled (nightly)"
+          else
+            LAUNCHED_BY="👤 <b>Launched by:</b> <a href=\"https://github.com/${ACTOR}\">@${ACTOR}</a>"
+          fi
+
           MESSAGE="⸻⸻⸻⸻⸻
           <b>SC KPI API ${SUITE_DISPLAY} — ${STATUS} ${STATUS_ICON}</b>
 
@@ -380,12 +446,15 @@ jobs:
           ⁉️   Unknown: <b>${UNKNOWN}</b>
 
           — <b>Total tests executed</b>: ${TOTAL}
+          ${RETRY_LINE}
           ⸻⸻⸻⸻⸻
           <b>Workflow setup:</b>
           ${SETUP}
           ⸻⸻⸻⸻⸻
           📊 <a href=\"${ALLURE_URL}\">Allure Report</a>
           🔗 <a href=\"${GITHUB_RUN_URL}\">GitHub Run</a>
+
+          ${LAUNCHED_BY}
           ⸻⸻⸻⸻⸻"
 
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
