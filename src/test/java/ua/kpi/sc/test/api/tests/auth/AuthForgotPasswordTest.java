@@ -23,8 +23,8 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
     // ==================== SMOKE ====================
 
     @Test(groups = {TestGroup.SMOKE, TestGroup.POSITIVE},
-            description = "Forgot password returns 200 for registered email")
-    public void forgotPasswordReturns200ForRegisteredEmail() {
+            description = "Forgot password returns 204 for registered email")
+    public void forgotPasswordReturns204ForRegisteredEmail() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
@@ -32,20 +32,20 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
 
         Response response = authClient.forgotPassword(request);
 
-        assertOk(response);
+        assertNoContent(response);
     }
 
     // ==================== POSITIVE ====================
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Forgot password returns 200 for non-existent email (enumeration prevention)")
-    public void forgotPasswordReturns200ForNonExistentEmail() {
+            description = "Forgot password returns 204 for non-existent email (enumeration prevention)")
+    public void forgotPasswordReturns204ForNonExistentEmail() {
         ForgotPasswordRequest request = TestDataFactory.validForgotPasswordRequest(
                 "nonexistent-" + System.nanoTime() + "@kpi.ua");
 
         Response response = authClient.forgotPassword(request);
 
-        assertOk(response);
+        assertNoContent(response);
     }
 
     @Test(groups = {TestGroup.POSITIVE},
@@ -93,8 +93,8 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Multiple forgot password calls all return 200")
-    public void multipleForgotPasswordCallsAllReturn200() {
+            description = "Multiple forgot password calls all return 204")
+    public void multipleForgotPasswordCallsAllReturn204() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
@@ -104,9 +104,9 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
         Response response2 = authClient.forgotPassword(request);
         Response response3 = authClient.forgotPassword(request);
 
-        assertOk(response1);
-        assertOk(response2);
-        assertOk(response3);
+        assertNoContent(response1);
+        assertNoContent(response2);
+        assertNoContent(response3);
     }
 
     // ==================== NEGATIVE ====================
@@ -184,7 +184,7 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
     // ==================== CONTRACT ====================
 
     @Test(groups = {TestGroup.CONTRACT},
-            description = "Forgot password 200 response has empty body (no JSON)")
+            description = "Forgot password 204 response has empty body (no JSON)")
     public void forgotPasswordResponseHasEmptyBody() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
@@ -192,7 +192,7 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
         ForgotPasswordRequest request = TestDataFactory.validForgotPasswordRequest(regRequest.getEmail());
         Response response = authClient.forgotPassword(request);
 
-        assertOk(response);
+        assertNoContent(response);
         assertThat(response.getBody().asString()).isEmpty();
     }
 
@@ -210,8 +210,8 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
     }
 
     @Test(groups = {TestGroup.CONTRACT, TestGroup.SECURITY},
-            description = "Forgot password 200 body doesn't reveal email existence")
-    public void forgotPassword200BodyDoesNotRevealEmailExistence() {
+            description = "Forgot password 204 body doesn't reveal email existence")
+    public void forgotPassword204BodyDoesNotRevealEmailExistence() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
@@ -222,9 +222,9 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
         Response r2 = authClient.forgotPassword(
                 TestDataFactory.validForgotPasswordRequest("nonexistent-" + System.nanoTime() + "@kpi.ua"));
 
-        assertOk(r1);
-        assertOk(r2);
-        // Both responses should be empty (API returns ResponseEntity<Void>)
+        assertNoContent(r1);
+        assertNoContent(r2);
+        // Both responses should be empty (API returns 204 No Content)
         assertThat(r1.getBody().asString()).isEmpty();
         assertThat(r2.getBody().asString()).isEmpty();
     }
@@ -276,7 +276,7 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
 
         Response response = authClient.forgotPassword(request);
 
-        assertThat(response.getStatusCode()).isIn(400, 200);
+        assertThat(response.getStatusCode()).isIn(400, 204);
     }
 
     @Test(groups = {TestGroup.SECURITY},
@@ -324,7 +324,7 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
 
         Response response = authClient.forgotPassword(request);
 
-        assertOk(response);
+        assertNoContent(response);
 
         try { Thread.sleep(2000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         Response mailResponse = mailpitClient.searchMessages(oauthOnlyEmail);

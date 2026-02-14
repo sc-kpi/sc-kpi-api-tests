@@ -26,8 +26,8 @@ public class AuthResetPasswordTest extends BaseAuthTest {
     // ==================== SMOKE ====================
 
     @Test(groups = {TestGroup.SMOKE, TestGroup.POSITIVE},
-            description = "Reset password with valid token returns 200")
-    public void resetPasswordWithValidTokenReturns200() {
+            description = "Reset password with valid token returns 204")
+    public void resetPasswordWithValidTokenReturns204() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
@@ -36,7 +36,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
 
         Response response = authClient.resetPassword(resetRequest);
 
-        assertOk(response);
+        assertNoContent(response);
     }
 
     // ==================== POSITIVE ====================
@@ -107,7 +107,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
 
         Response response = authClient.resetPassword(resetRequest);
 
-        assertOk(response);
+        assertNoContent(response);
     }
 
     @Test(groups = {TestGroup.POSITIVE, TestGroup.VALIDATION},
@@ -122,11 +122,11 @@ public class AuthResetPasswordTest extends BaseAuthTest {
 
         Response response = authClient.resetPassword(resetRequest);
 
-        assertOk(response);
+        assertNoContent(response);
     }
 
     @Test(groups = {TestGroup.POSITIVE, TestGroup.CONTRACT},
-            description = "Reset password 200 response has empty body (no JSON)")
+            description = "Reset password 204 response has empty body (no JSON)")
     public void resetPasswordResponseHasEmptyBody() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
@@ -136,7 +136,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
 
         Response response = authClient.resetPassword(resetRequest);
 
-        assertOk(response);
+        assertNoContent(response);
         assertThat(response.getBody().asString()).isEmpty();
     }
 
