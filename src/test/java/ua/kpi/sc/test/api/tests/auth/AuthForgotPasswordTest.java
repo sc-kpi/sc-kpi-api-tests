@@ -63,7 +63,7 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
         ForgotPasswordRequest request = TestDataFactory.validForgotPasswordRequest(regRequest.getEmail());
         authClient.forgotPassword(request);
 
-        Response mailResponse = mailpitClient.waitForMessage(regRequest.getEmail(), 10);
+        Response mailResponse = mailpitClient.waitForMessage(regRequest.getEmail());
         assertThat(mailResponse.jsonPath().getInt("messages_count")).isGreaterThan(0);
     }
 
@@ -76,7 +76,7 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
         ForgotPasswordRequest request = TestDataFactory.validForgotPasswordRequest(regRequest.getEmail());
         authClient.forgotPassword(request);
 
-        Response mailResponse = mailpitClient.waitForMessage(regRequest.getEmail(), 10);
+        Response mailResponse = mailpitClient.waitForMessage(regRequest.getEmail());
         String messageId = mailResponse.jsonPath().getString("messages[0].ID");
         Response messageResponse = mailpitClient.getMessage(messageId);
 

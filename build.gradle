@@ -41,6 +41,9 @@ dependencies {
     // AssertJ
     implementation "org.assertj:assertj-core:${assertjVersion}"
 
+    // Awaitility
+    implementation "org.awaitility:awaitility:${awaitilityVersion}"
+
     // DataFaker
     implementation "net.datafaker:datafaker:${datafakerVersion}"
 
@@ -86,7 +89,8 @@ test {
         key.startsWith('auth.') ||
         key.startsWith('parallel') ||
         key.startsWith('threadCount') ||
-        key.startsWith('allure.')
+        key.startsWith('allure.') ||
+        key.startsWith('mailpit.')
     }
 
     systemProperty 'allure.results.directory', "${project.buildDir}/allure-results"
@@ -112,7 +116,8 @@ def configureTestTask = { Test task ->
         key.startsWith('auth.') ||
         key.startsWith('parallel') ||
         key.startsWith('threadCount') ||
-        key.startsWith('allure.')
+        key.startsWith('allure.') ||
+        key.startsWith('mailpit.')
     }
     task.systemProperty 'allure.results.directory', "${project.buildDir}/allure-results"
 

@@ -25,3 +25,5 @@ cleanup:
 
 mailpit:
   baseUrl: http://localhost:8025
+  timeoutSeconds: 20
+  pollIntervalMs: 1000
