@@ -37,7 +37,7 @@ public class AuthPasswordResetFlowTest extends BaseAuthTest {
         String newPassword = "FlowNewPass123!";
         ResetPasswordRequest resetRequest = TestDataFactory.resetPasswordRequest(token, newPassword);
         Response resetResponse = authClient.resetPassword(resetRequest);
-        assertOk(resetResponse);
+        assertNoContent(resetResponse);
 
         LoginRequest loginRequest = LoginRequest.builder()
                 .email(regRequest.getEmail())
@@ -109,8 +109,8 @@ public class AuthPasswordResetFlowTest extends BaseAuthTest {
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Multiple forgot-password requests — all return 200")
-    public void multipleForgotPasswordRequestsAllReturn200() {
+            description = "Multiple forgot-password requests — all return 204")
+    public void multipleForgotPasswordRequestsAllReturn204() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
@@ -120,9 +120,9 @@ public class AuthPasswordResetFlowTest extends BaseAuthTest {
         Response r2 = authClient.forgotPassword(request);
         Response r3 = authClient.forgotPassword(request);
 
-        assertOk(r1);
-        assertOk(r2);
-        assertOk(r3);
+        assertNoContent(r1);
+        assertNoContent(r2);
+        assertNoContent(r3);
     }
 
     @Test(groups = {TestGroup.POSITIVE},
@@ -144,7 +144,7 @@ public class AuthPasswordResetFlowTest extends BaseAuthTest {
         String secondNewPassword = "SecondReset123!";
         Response resetResponse = authClient.resetPassword(
                 TestDataFactory.resetPasswordRequest(token2, secondNewPassword));
-        assertOk(resetResponse);
+        assertNoContent(resetResponse);
 
         // Login with second new password
         LoginRequest loginRequest = LoginRequest.builder()
@@ -171,8 +171,8 @@ public class AuthPasswordResetFlowTest extends BaseAuthTest {
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Concurrent forgot-password requests all return 200")
-    public void concurrentForgotPasswordRequestsAllReturn200() {
+            description = "Concurrent forgot-password requests all return 204")
+    public void concurrentForgotPasswordRequestsAllReturn204() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
@@ -182,8 +182,8 @@ public class AuthPasswordResetFlowTest extends BaseAuthTest {
         Response r1 = authClient.forgotPassword(request);
         Response r2 = authClient.forgotPassword(request);
 
-        assertOk(r1);
-        assertOk(r2);
+        assertNoContent(r1);
+        assertNoContent(r2);
     }
 
     @Test(groups = {TestGroup.POSITIVE},
