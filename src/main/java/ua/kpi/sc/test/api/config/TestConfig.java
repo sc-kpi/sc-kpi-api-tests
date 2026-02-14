@@ -67,5 +67,7 @@ public class TestConfig {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class MailpitConfig {
         private String baseUrl = "http://localhost:8025";
+        private int timeoutSeconds = 15;
+        private long pollIntervalMs = 1000;
     }
 }

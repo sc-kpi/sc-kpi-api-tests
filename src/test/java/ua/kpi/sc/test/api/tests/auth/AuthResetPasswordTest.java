@@ -3,20 +3,16 @@ package ua.kpi.sc.test.api.tests.auth;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.restassured.response.Response;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ua.kpi.sc.test.api.client.mail.MailpitClient;
+import ua.kpi.sc.test.api.client.mail.MailpitHelper;
 import ua.kpi.sc.test.api.config.Endpoint;
 import ua.kpi.sc.test.api.config.TestGroup;
 import ua.kpi.sc.test.api.data.TestDataFactory;
-import ua.kpi.sc.test.api.model.auth.ForgotPasswordRequest;
 import ua.kpi.sc.test.api.model.auth.LoginRequest;
 import ua.kpi.sc.test.api.model.auth.RegisterRequest;
 import ua.kpi.sc.test.api.model.auth.ResetPasswordRequest;
 import ua.kpi.sc.test.api.util.SchemaValidator;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,25 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AuthResetPasswordTest extends BaseAuthTest {
 
     private final MailpitClient mailpitClient = new MailpitClient();
-
-    @BeforeMethod
-    public void cleanMailbox() {
-        mailpitClient.deleteAllMessages();
-    }
-
-    private String requestResetTokenViaMailpit(String email) {
-        ForgotPasswordRequest forgotRequest = TestDataFactory.validForgotPasswordRequest(email);
-        authClient.forgotPassword(forgotRequest);
-
-        Response mailResponse = mailpitClient.waitForMessage(email, 10);
-        String messageId = mailResponse.jsonPath().getString("messages[0].ID");
-        Response messageResponse = mailpitClient.getMessage(messageId);
-
-        String body = messageResponse.jsonPath().getString("Text");
-        Matcher matcher = Pattern.compile("token=([a-f0-9-]+)").matcher(body);
-        assertThat(matcher.find()).as("Reset token should be present in email body").isTrue();
-        return matcher.group(1);
-    }
+    private final MailpitHelper mailpitHelper = new MailpitHelper(authClient, mailpitClient);
 
     // ==================== SMOKE ====================
 
@@ -53,7 +31,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
-        String token = requestResetTokenViaMailpit(regRequest.getEmail());
+        String token = mailpitHelper.requestResetToken(regRequest.getEmail());
         ResetPasswordRequest resetRequest = TestDataFactory.validResetPasswordRequest(token);
 
         Response response = authClient.resetPassword(resetRequest);
@@ -69,7 +47,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
-        String token = requestResetTokenViaMailpit(regRequest.getEmail());
+        String token = mailpitHelper.requestResetToken(regRequest.getEmail());
         String newPassword = "ResetPass123!";
         ResetPasswordRequest resetRequest = TestDataFactory.resetPasswordRequest(token, newPassword);
         authClient.resetPassword(resetRequest);
@@ -89,7 +67,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
-        String token = requestResetTokenViaMailpit(regRequest.getEmail());
+        String token = mailpitHelper.requestResetToken(regRequest.getEmail());
         String newPassword = "ResetPass123!";
         ResetPasswordRequest resetRequest = TestDataFactory.resetPasswordRequest(token, newPassword);
         authClient.resetPassword(resetRequest);
@@ -110,7 +88,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
         Response regResponse = authClient.register(regRequest);
         String refreshToken = extractCookie(regResponse, "refresh_token");
 
-        String token = requestResetTokenViaMailpit(regRequest.getEmail());
+        String token = mailpitHelper.requestResetToken(regRequest.getEmail());
         ResetPasswordRequest resetRequest = TestDataFactory.validResetPasswordRequest(token);
         authClient.resetPassword(resetRequest);
 
@@ -124,7 +102,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
-        String token = requestResetTokenViaMailpit(regRequest.getEmail());
+        String token = mailpitHelper.requestResetToken(regRequest.getEmail());
         ResetPasswordRequest resetRequest = TestDataFactory.resetPasswordRequest(token, "Ab1@defg");
 
         Response response = authClient.resetPassword(resetRequest);
@@ -138,7 +116,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
-        String token = requestResetTokenViaMailpit(regRequest.getEmail());
+        String token = mailpitHelper.requestResetToken(regRequest.getEmail());
         String longPassword = "A1@" + "a".repeat(69);
         ResetPasswordRequest resetRequest = TestDataFactory.resetPasswordRequest(token, longPassword);
 
@@ -153,7 +131,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
-        String token = requestResetTokenViaMailpit(regRequest.getEmail());
+        String token = mailpitHelper.requestResetToken(regRequest.getEmail());
         ResetPasswordRequest resetRequest = TestDataFactory.validResetPasswordRequest(token);
 
         Response response = authClient.resetPassword(resetRequest);
@@ -266,7 +244,7 @@ public class AuthResetPasswordTest extends BaseAuthTest {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
 
-        String token = requestResetTokenViaMailpit(regRequest.getEmail());
+        String token = mailpitHelper.requestResetToken(regRequest.getEmail());
         ResetPasswordRequest resetRequest = TestDataFactory.validResetPasswordRequest(token);
         authClient.resetPassword(resetRequest);
 

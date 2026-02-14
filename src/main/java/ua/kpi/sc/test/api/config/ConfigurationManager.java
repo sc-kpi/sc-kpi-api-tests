@@ -79,9 +79,16 @@ public final class ConfigurationManager {
         if (overlay.getExecution().getThreadCount() != 1) {
             base.getExecution().setThreadCount(overlay.getExecution().getThreadCount());
         }
-        if (overlay.getMailpit() != null && overlay.getMailpit().getBaseUrl() != null
-                && !overlay.getMailpit().getBaseUrl().isEmpty()) {
-            base.setMailpit(overlay.getMailpit());
+        if (overlay.getMailpit() != null) {
+            if (overlay.getMailpit().getBaseUrl() != null && !overlay.getMailpit().getBaseUrl().isEmpty()) {
+                base.getMailpit().setBaseUrl(overlay.getMailpit().getBaseUrl());
+            }
+            if (overlay.getMailpit().getTimeoutSeconds() != 15) {
+                base.getMailpit().setTimeoutSeconds(overlay.getMailpit().getTimeoutSeconds());
+            }
+            if (overlay.getMailpit().getPollIntervalMs() != 1000) {
+                base.getMailpit().setPollIntervalMs(overlay.getMailpit().getPollIntervalMs());
+            }
         }
     }
 
@@ -109,6 +116,16 @@ public final class ConfigurationManager {
         String threadCount = System.getProperty("threadCount");
         if (threadCount != null) {
             config.getExecution().setThreadCount(Integer.parseInt(threadCount));
+        }
+
+        String mailpitTimeout = System.getProperty("mailpit.timeout");
+        if (mailpitTimeout != null) {
+            config.getMailpit().setTimeoutSeconds(Integer.parseInt(mailpitTimeout));
+        }
+
+        String mailpitPollInterval = System.getProperty("mailpit.pollInterval");
+        if (mailpitPollInterval != null) {
+            config.getMailpit().setPollIntervalMs(Long.parseLong(mailpitPollInterval));
         }
     }
 

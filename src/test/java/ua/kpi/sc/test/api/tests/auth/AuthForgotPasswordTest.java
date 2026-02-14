@@ -3,7 +3,6 @@ package ua.kpi.sc.test.api.tests.auth;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.restassured.response.Response;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ua.kpi.sc.test.api.client.mail.MailpitClient;
 import ua.kpi.sc.test.api.config.Endpoint;
@@ -20,11 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AuthForgotPasswordTest extends BaseAuthTest {
 
     private final MailpitClient mailpitClient = new MailpitClient();
-
-    @BeforeMethod
-    public void cleanMailbox() {
-        mailpitClient.deleteAllMessages();
-    }
 
     // ==================== SMOKE ====================
 
@@ -63,7 +57,7 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
         ForgotPasswordRequest request = TestDataFactory.validForgotPasswordRequest(regRequest.getEmail());
         authClient.forgotPassword(request);
 
-        Response mailResponse = mailpitClient.waitForMessage(regRequest.getEmail(), 10);
+        Response mailResponse = mailpitClient.waitForMessage(regRequest.getEmail());
         assertThat(mailResponse.jsonPath().getInt("messages_count")).isGreaterThan(0);
     }
 
@@ -76,7 +70,7 @@ public class AuthForgotPasswordTest extends BaseAuthTest {
         ForgotPasswordRequest request = TestDataFactory.validForgotPasswordRequest(regRequest.getEmail());
         authClient.forgotPassword(request);
 
-        Response mailResponse = mailpitClient.waitForMessage(regRequest.getEmail(), 10);
+        Response mailResponse = mailpitClient.waitForMessage(regRequest.getEmail());
         String messageId = mailResponse.jsonPath().getString("messages[0].ID");
         Response messageResponse = mailpitClient.getMessage(messageId);
 
