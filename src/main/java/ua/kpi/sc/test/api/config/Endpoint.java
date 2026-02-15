@@ -48,6 +48,18 @@ public final class Endpoint {
     // Telegram Webhook
     public static final String TELEGRAM_WEBHOOK = "/api/v1/webhooks/telegram";
 
+    // Feature Flags
+    public static final String FEATURE_FLAGS = "/api/v1/feature-flags";
+    public static final String FEATURE_FLAG_BY_KEY = FEATURE_FLAGS + "/{key}";
+    public static final String ADMIN_FEATURE_FLAGS = "/api/v1/admin/feature-flags";
+    public static final String ADMIN_FEATURE_FLAG_BY_ID = ADMIN_FEATURE_FLAGS + "/{id}";
+    public static final String ADMIN_FEATURE_FLAG_TOGGLE = ADMIN_FEATURE_FLAG_BY_ID + "/toggle";
+    public static final String ADMIN_FEATURE_FLAG_OVERRIDES = ADMIN_FEATURE_FLAG_BY_ID + "/overrides";
+    public static final String ADMIN_FEATURE_FLAG_OVERRIDE = ADMIN_FEATURE_FLAG_OVERRIDES + "/{overrideId}";
+    public static final String ADMIN_FEATURE_FLAG_BULK_TOGGLE = ADMIN_FEATURE_FLAGS + "/bulk-toggle";
+    public static final String ADMIN_FEATURE_FLAG_AUDIT_LOG = ADMIN_FEATURE_FLAG_BY_ID + "/audit-log";
+    public static final String ADMIN_FEATURE_FLAGS_AUDIT_LOG = ADMIN_FEATURE_FLAGS + "/audit-log";
+
     // Audit
     public static final String AUDIT_LOGS = "/api/v1/admin/audit-logs";
 
