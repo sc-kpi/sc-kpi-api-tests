@@ -11,11 +11,6 @@
     </listeners>
 
     <test name="All">
-        <groups>
-            <run>
-                <exclude name="todo"/>
-            </run>
-        </groups>
         <packages>
             <package name="ua.kpi.sc.test.api.tests.*"/>
         </packages>

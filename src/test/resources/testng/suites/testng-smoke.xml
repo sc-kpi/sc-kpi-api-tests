@@ -15,7 +15,6 @@
             <run>
                 <include name="smoke"/>
                 <include name="framework"/>
-                <exclude name="todo"/>
             </run>
         </groups>
         <packages>
