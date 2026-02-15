@@ -96,8 +96,8 @@ public class FeatureFlagEvaluationTest extends BaseFeatureFlagTest {
 
         assertOk(response);
         response.then()
-                .body(enabledFlag.getKey(), equalTo(true))
-                .body(disabledFlag.getKey(), equalTo(false));
+                .body("'" + enabledFlag.getKey() + "'", equalTo(true))
+                .body("'" + disabledFlag.getKey() + "'", equalTo(false));
     }
 
     // ==================== Override Evaluation ====================
@@ -118,7 +118,7 @@ public class FeatureFlagEvaluationTest extends BaseFeatureFlagTest {
 
         assertOk(response);
         response.then()
-                .body(created.getKey(), equalTo(false));
+                .body("'" + created.getKey() + "'", equalTo(false));
     }
 
     @Test(groups = {TestGroup.POSITIVE},
@@ -156,7 +156,7 @@ public class FeatureFlagEvaluationTest extends BaseFeatureFlagTest {
         assertOk(response);
         // Unauthenticated should see the global state (true), not the user override
         response.then()
-                .body(created.getKey(), equalTo(true));
+                .body("'" + created.getKey() + "'", equalTo(true));
     }
 
     @Test(groups = {TestGroup.POSITIVE},

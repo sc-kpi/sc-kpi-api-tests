@@ -77,7 +77,7 @@ public class FeatureFlagLifecycleTest extends BaseFeatureFlagTest {
 
         assertOk(evalResponse);
         evalResponse.then()
-                .body(created.getKey(), equalTo(true));
+                .body("'" + created.getKey() + "'", equalTo(true));
     }
 
     @Test(groups = {TestGroup.REGRESSION},

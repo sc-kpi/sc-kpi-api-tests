@@ -117,7 +117,7 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
     public void createdFlagAppearsInList() {
         FeatureFlagResponse created = getFlagHelper().createDefaultFlag();
 
-        Response response = flagClient.listFlags(authToken);
+        Response response = flagClient.listFlags(authToken, Map.of("size", "100", "sort", "createdAt,desc"));
 
         assertOk(response);
         response.then()
