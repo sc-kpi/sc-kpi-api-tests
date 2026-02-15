@@ -83,6 +83,9 @@ test {
         }
     }
 
+    maxParallelForks = Math.max(1, Runtime.runtime.availableProcessors().intdiv(2))
+    jvmArgs = ['-Xmx1g', '-XX:+UseParallelGC']
+
     systemProperties = System.properties.findAll { key, _ ->
         key.startsWith('baseUrl') ||
         key.startsWith('env') ||
@@ -109,6 +112,9 @@ test {
 def configureTestTask = { Test task ->
     task.testClassesDirs = sourceSets.test.output.classesDirs
     task.classpath = sourceSets.test.runtimeClasspath
+
+    task.maxParallelForks = Math.max(1, Runtime.runtime.availableProcessors().intdiv(2))
+    task.jvmArgs = ['-Xmx1g', '-XX:+UseParallelGC']
 
     task.systemProperties = System.properties.findAll { key, _ ->
         key.startsWith('baseUrl') ||

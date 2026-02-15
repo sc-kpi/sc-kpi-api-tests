@@ -101,7 +101,8 @@ on:
         default: ""
 
 concurrency:
-  group: regression-${{ github.run_id }}
+  group: regression-${{ inputs.caller_event == 'schedule' && 'nightly' || github.run_id }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -182,7 +183,7 @@ jobs:
           ARGS="$ARGS -Denv=${{ inputs.environment }}"
           ARGS="$ARGS -DthreadCount=${{ inputs.thread_count }}"
           ARGS="$ARGS -Dauth.enabled=${{ inputs.auth_enabled }}"
-          ARGS="$ARGS --no-daemon"
+          ARGS="$ARGS --no-daemon --build-cache"
           if [[ -n "${{ inputs.base_url }}" ]]; then
             ARGS="$ARGS -DbaseUrl=${{ inputs.base_url }}"
           fi
