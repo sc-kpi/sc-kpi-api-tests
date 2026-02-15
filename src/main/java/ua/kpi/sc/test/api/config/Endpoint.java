@@ -57,11 +57,10 @@ public final class Endpoint {
     public static final String ADMIN_FEATURE_FLAG_OVERRIDES = ADMIN_FEATURE_FLAG_BY_ID + "/overrides";
     public static final String ADMIN_FEATURE_FLAG_OVERRIDE = ADMIN_FEATURE_FLAG_OVERRIDES + "/{overrideId}";
     public static final String ADMIN_FEATURE_FLAG_BULK_TOGGLE = ADMIN_FEATURE_FLAGS + "/bulk-toggle";
-    public static final String ADMIN_FEATURE_FLAG_AUDIT_LOG = ADMIN_FEATURE_FLAG_BY_ID + "/audit-log";
-    public static final String ADMIN_FEATURE_FLAGS_AUDIT_LOG = ADMIN_FEATURE_FLAGS + "/audit-log";
-
     // Audit
     public static final String AUDIT_LOGS = "/api/v1/admin/audit-logs";
+    public static final String AUDIT_LOGS_EXPORT = AUDIT_LOGS + "/export";
+    public static final String AUDIT_LOGS_STATS = AUDIT_LOGS + "/stats";
 
     // Actuator & Swagger
     public static final String HEALTH = "/actuator/health";

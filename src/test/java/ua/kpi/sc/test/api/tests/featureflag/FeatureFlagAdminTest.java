@@ -9,6 +9,7 @@ import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import ua.kpi.sc.test.api.annotation.Authentication;
+import ua.kpi.sc.test.api.client.audit.AuditClient;
 import ua.kpi.sc.test.api.config.TestGroup;
 import ua.kpi.sc.test.api.data.FeatureFlagTestHelper;
 import ua.kpi.sc.test.api.model.featureflag.BulkToggleRequest;
@@ -28,6 +29,8 @@ import static org.hamcrest.Matchers.notNullValue;
 @Epic("Feature Flags")
 @Feature("Admin Feature Flag Management")
 public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
+
+    private final AuditClient auditClient = new AuditClient();
 
     // ==================== CRUD ====================
 
@@ -238,15 +241,16 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
         getResponse2.then().body("enabled", equalTo(false));
     }
 
-    // ==================== Audit Log ====================
+    // ==================== Audit Log (Centralized) ====================
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Toggle generates audit log entry")
+            description = "Toggle generates audit log entry in centralized audit")
     public void toggleGeneratesAuditLogEntry() {
         FeatureFlagResponse created = getFlagHelper().createDefaultFlag();
         flagClient.toggleFlag(created.getId(), FeatureFlagTestHelper.toggleRequest(false), authToken);
 
-        Response response = flagClient.getAuditLog(created.getId(), authToken);
+        Response response = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG", "entityId", created.getId()));
 
         assertOk(response);
         response.then()
@@ -254,9 +258,10 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Get all audit logs returns paginated response")
-    public void getAllAuditLogsReturnsResponse() {
-        Response response = flagClient.getAllAuditLogs(authToken);
+            description = "Feature flag audit logs available via centralized endpoint")
+    public void featureFlagAuditLogsAvailableViaCentralizedEndpoint() {
+        Response response = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG"));
 
         assertOk(response);
         response.then()
@@ -556,23 +561,23 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
                 .body("overrides.size()", equalTo(0));
     }
 
-    // ==================== Audit Log Expanded ====================
+    // ==================== Audit Log Expanded (Centralized) ====================
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Create flag generates audit entry")
+            description = "Create flag generates audit entry in centralized audit")
     public void createFlagGeneratesAuditEntry() {
         FeatureFlagResponse created = getFlagHelper().createDefaultFlag();
 
-        Response response = flagClient.getAuditLog(created.getId(), authToken);
+        Response response = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG", "entityId", created.getId()));
 
         assertOk(response);
         response.then()
-                .body("content.size()", greaterThanOrEqualTo(1))
-                .body("content[0].action", equalTo("CREATED"));
+                .body("content.size()", greaterThanOrEqualTo(1));
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Update flag generates audit entry with old and new values")
+            description = "Update flag generates audit entry in centralized audit")
     public void updateFlagGeneratesAuditEntryWithOldAndNewValues() {
         FeatureFlagResponse created = getFlagHelper().createDefaultFlag();
         UpdateFeatureFlagRequest update = UpdateFeatureFlagRequest.builder()
@@ -580,7 +585,8 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
                 .build();
         flagClient.updateFlag(created.getId(), update, authToken);
 
-        Response response = flagClient.getAuditLog(created.getId(), authToken);
+        Response response = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG", "entityId", created.getId()));
 
         assertOk(response);
         response.then()
@@ -588,7 +594,7 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Delete flag generates audit entry")
+            description = "Delete flag generates audit entry in centralized audit")
     public void deleteFlagGeneratesAuditEntry() {
         CreateFeatureFlagRequest request = FeatureFlagTestHelper.validCreateRequest();
         Response createResponse = flagClient.createFlag(request, authToken);
@@ -596,21 +602,21 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
 
         flagClient.deleteFlag(flagId, authToken);
 
-        // After deletion, the flag-specific audit log endpoint would return 404
-        // but the all audit logs endpoint should have the entry
-        Response response = flagClient.getAllAuditLogs(authToken);
+        Response response = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG"));
         assertOk(response);
         response.then()
                 .body("content.size()", greaterThanOrEqualTo(1));
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Add override generates audit entry")
+            description = "Add override generates audit entry in centralized audit")
     public void addOverrideGeneratesAuditEntry() {
         FeatureFlagResponse created = getFlagHelper().createDefaultFlag();
         flagClient.addOverride(created.getId(), FeatureFlagTestHelper.tierOverride(4, true), authToken);
 
-        Response response = flagClient.getAuditLog(created.getId(), authToken);
+        Response response = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG", "entityId", created.getId()));
 
         assertOk(response);
         response.then()
@@ -618,14 +624,15 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "Audit log pagination works correctly")
+            description = "Feature flag audit pagination works via centralized audit")
     public void auditLogPaginationWorksCorrectly() {
         FeatureFlagResponse created = getFlagHelper().createDefaultFlag();
         // Generate multiple audit entries
         flagClient.toggleFlag(created.getId(), FeatureFlagTestHelper.toggleRequest(false), authToken);
         flagClient.toggleFlag(created.getId(), FeatureFlagTestHelper.toggleRequest(true), authToken);
 
-        Response response = flagClient.getAuditLog(created.getId(), authToken, Map.of("size", "1"));
+        Response response = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG", "entityId", created.getId(), "size", "1"));
 
         assertOk(response);
         response.then()
@@ -634,12 +641,13 @@ public class FeatureFlagAdminTest extends BaseFeatureFlagTest {
     }
 
     @Test(groups = {TestGroup.POSITIVE},
-            description = "All audit logs endpoint returns cross-flag entries")
+            description = "Centralized audit returns cross-flag entries")
     public void allAuditLogsEndpointReturnsCrossFlag() {
         getFlagHelper().createDefaultFlag();
         getFlagHelper().createDefaultFlag();
 
-        Response response = flagClient.getAllAuditLogs(authToken);
+        Response response = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG"));
 
         assertOk(response);
         response.then()

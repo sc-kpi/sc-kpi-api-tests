@@ -95,22 +95,4 @@ public class FeatureFlagClient extends ApiClient {
         return post(Endpoint.ADMIN_FEATURE_FLAG_BULK_TOGGLE, request, authToken);
     }
 
-    // ==================== Audit Log ====================
-
-    @Step("GET /admin/feature-flags/{id}/audit-log — Get audit log for flag: {id}")
-    public Response getAuditLog(String id, String authToken) {
-        return get(Endpoint.ADMIN_FEATURE_FLAGS + "/" + id + "/audit-log", authToken);
-    }
-
-    @Step("GET /admin/feature-flags/{id}/audit-log — Get audit log with pagination")
-    public Response getAuditLog(String id, String authToken, Map<String, String> queryParams) {
-        RequestSpecification spec = requestSpec(authToken);
-        queryParams.forEach(spec::queryParam);
-        return spec.get(Endpoint.ADMIN_FEATURE_FLAGS + "/" + id + "/audit-log");
-    }
-
-    @Step("GET /admin/feature-flags/audit-log — Get all audit logs")
-    public Response getAllAuditLogs(String authToken) {
-        return get(Endpoint.ADMIN_FEATURE_FLAGS_AUDIT_LOG, authToken);
-    }
 }

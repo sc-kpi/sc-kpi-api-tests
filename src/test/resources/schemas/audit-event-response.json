@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Audit Event Response",
+  "type": "object",
+  "required": ["id", "action", "entityType", "sourceModule", "createdAt"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "actorId": {
+      "type": ["string", "null"]
+    },
+    "actorEmail": {
+      "type": ["string", "null"]
+    },
+    "action": {
+      "type": "string"
+    },
+    "entityType": {
+      "type": "string"
+    },
+    "entityId": {
+      "type": ["string", "null"]
+    },
+    "entityName": {
+      "type": ["string", "null"]
+    },
+    "fieldName": {
+      "type": ["string", "null"]
+    },
+    "oldValue": {
+      "type": ["string", "null"]
+    },
+    "newValue": {
+      "type": ["string", "null"]
+    },
+    "details": {
+      "type": ["string", "null"]
+    },
+    "sourceModule": {
+      "type": "string"
+    },
+    "ipAddress": {
+      "type": ["string", "null"]
+    },
+    "createdAt": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
