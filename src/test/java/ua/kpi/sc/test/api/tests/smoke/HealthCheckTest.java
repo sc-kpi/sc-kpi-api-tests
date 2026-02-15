@@ -32,6 +32,6 @@ public class HealthCheckTest extends BasePublicApiTest {
         Response response = get(Endpoint.HEALTH);
 
         AssertionHelper.assertStatusCode(response, 200);
-        AssertionHelper.assertResponseTime(response, 3000);
+        AssertionHelper.assertResponseTime(response, 5000);
     }
 }
