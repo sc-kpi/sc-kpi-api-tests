@@ -1,12 +1,14 @@
 package ua.kpi.sc.test.api.tests.featureflag;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import ua.kpi.sc.test.api.client.audit.AuditClient;
 import ua.kpi.sc.test.api.config.TestGroup;
 import ua.kpi.sc.test.api.data.FeatureFlagTestHelper;
 import ua.kpi.sc.test.api.model.featureflag.BulkToggleRequest;
@@ -21,6 +23,8 @@ import static org.hamcrest.Matchers.notNullValue;
 @Epic("Feature Flags")
 @Feature("Feature Flag Lifecycle")
 public class FeatureFlagLifecycleTest extends BaseFeatureFlagTest {
+
+    private final AuditClient auditClient = new AuditClient();
 
     @Test(groups = {TestGroup.REGRESSION},
             description = "Full lifecycle: create → toggle → add override → update → delete")
@@ -51,8 +55,9 @@ public class FeatureFlagLifecycleTest extends BaseFeatureFlagTest {
         assertOk(updateResponse);
         updateResponse.then().body("name", equalTo("Updated Lifecycle Flag"));
 
-        // Verify audit log has entries
-        Response auditResponse = flagClient.getAuditLog(flagId, authToken);
+        // Verify audit log has entries (via centralized audit API)
+        Response auditResponse = auditClient.getAuditLogs(authToken,
+                Map.of("entityType", "FEATURE_FLAG", "entityId", flagId));
         assertOk(auditResponse);
         auditResponse.then().body("content.size()", greaterThanOrEqualTo(3));
 
