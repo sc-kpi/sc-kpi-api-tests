@@ -83,7 +83,9 @@ test {
         }
     }
 
-    maxParallelForks = Math.max(1, Runtime.runtime.availableProcessors().intdiv(2))
+    // TestNG handles parallelism internally via suite XML (parallel="classes" thread-count="10").
+    // Multiple Gradle forks would each run the entire suite, multiplying test executions.
+    maxParallelForks = 1
     jvmArgs = ['-Xmx1g', '-XX:+UseParallelGC']
 
     systemProperties = System.properties.findAll { key, _ ->
@@ -113,7 +115,8 @@ def configureTestTask = { Test task ->
     task.testClassesDirs = sourceSets.test.output.classesDirs
     task.classpath = sourceSets.test.runtimeClasspath
 
-    task.maxParallelForks = Math.max(1, Runtime.runtime.availableProcessors().intdiv(2))
+    // TestNG handles parallelism internally via suite XML — never use multiple Gradle forks.
+    task.maxParallelForks = 1
     task.jvmArgs = ['-Xmx1g', '-XX:+UseParallelGC']
 
     task.systemProperties = System.properties.findAll { key, _ ->

@@ -5,6 +5,7 @@ import io.qameta.allure.Feature;
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
+import ua.kpi.sc.test.api.config.Config;
 import ua.kpi.sc.test.api.config.TestGroup;
 import ua.kpi.sc.test.api.data.TestDataFactory;
 import ua.kpi.sc.test.api.model.auth.LoginRequest;
@@ -16,10 +17,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Feature("Cookie Security")
 public class AuthCookieContractTest extends BaseAuthTest {
 
+    /**
+     * Whether the API is expected to set the Secure flag on cookies.
+     * In dev/test environments running over HTTP, cookies should NOT have Secure.
+     * In production/staging running over HTTPS, cookies MUST have Secure.
+     */
+    private boolean expectSecure() {
+        return Config.baseUrl().startsWith("https://");
+    }
+
     // ==================== REGISTER COOKIES ====================
 
     @Test(groups = {TestGroup.SECURITY, TestGroup.CONTRACT},
-            description = "Register cookies have Secure flag (may only be set over HTTPS)")
+            description = "Register cookies have Secure flag matching transport protocol")
     public void registerCookiesHaveSecureFlag() {
         Response response = registerUniqueUser();
 
@@ -27,8 +37,8 @@ public class AuthCookieContractTest extends BaseAuthTest {
         Cookie refreshToken = extractDetailedCookie(response, "refresh_token");
         assertThat(accessToken).isNotNull();
         assertThat(refreshToken).isNotNull();
-        assertThat(accessToken.isSecured()).isTrue();
-        assertThat(refreshToken.isSecured()).isTrue();
+        assertThat(accessToken.isSecured()).isEqualTo(expectSecure());
+        assertThat(refreshToken.isSecured()).isEqualTo(expectSecure());
     }
 
     @Test(groups = {TestGroup.SECURITY, TestGroup.CONTRACT},
@@ -69,7 +79,7 @@ public class AuthCookieContractTest extends BaseAuthTest {
     // ==================== LOGIN COOKIES ====================
 
     @Test(groups = {TestGroup.SECURITY, TestGroup.CONTRACT},
-            description = "Login cookies have Secure flag (may only be set over HTTPS)")
+            description = "Login cookies have Secure flag matching transport protocol")
     public void loginCookiesHaveSecureFlag() {
         RegisterRequest regRequest = TestDataFactory.validRegisterRequest();
         authClient.register(regRequest);
@@ -85,8 +95,8 @@ public class AuthCookieContractTest extends BaseAuthTest {
         Cookie refreshToken = extractDetailedCookie(response, "refresh_token");
         assertThat(accessToken).isNotNull();
         assertThat(refreshToken).isNotNull();
-        assertThat(accessToken.isSecured()).isTrue();
-        assertThat(refreshToken.isSecured()).isTrue();
+        assertThat(accessToken.isSecured()).isEqualTo(expectSecure());
+        assertThat(refreshToken.isSecured()).isEqualTo(expectSecure());
     }
 
     @Test(groups = {TestGroup.SECURITY, TestGroup.CONTRACT},
@@ -130,7 +140,7 @@ public class AuthCookieContractTest extends BaseAuthTest {
     // ==================== REFRESH COOKIES ====================
 
     @Test(groups = {TestGroup.SECURITY, TestGroup.CONTRACT},
-            description = "Refresh cookies have Secure flag (may only be set over HTTPS)")
+            description = "Refresh cookies have Secure flag matching transport protocol")
     public void refreshCookiesHaveSecureFlag() {
         Response regResponse = registerUniqueUser();
         String refreshToken = extractCookie(regResponse, "refresh_token");
@@ -142,8 +152,8 @@ public class AuthCookieContractTest extends BaseAuthTest {
         Cookie refreshTokenCookie = extractDetailedCookie(response, "refresh_token");
         assertThat(accessTokenCookie).isNotNull();
         assertThat(refreshTokenCookie).isNotNull();
-        assertThat(accessTokenCookie.isSecured()).isTrue();
-        assertThat(refreshTokenCookie.isSecured()).isTrue();
+        assertThat(accessTokenCookie.isSecured()).isEqualTo(expectSecure());
+        assertThat(refreshTokenCookie.isSecured()).isEqualTo(expectSecure());
     }
 
     @Test(groups = {TestGroup.SECURITY, TestGroup.CONTRACT},
@@ -179,7 +189,7 @@ public class AuthCookieContractTest extends BaseAuthTest {
     // ==================== LOGOUT COOKIES ====================
 
     @Test(groups = {TestGroup.SECURITY, TestGroup.CONTRACT},
-            description = "Logout cookies have Secure flag (may only be set over HTTPS)")
+            description = "Logout cookies have Secure flag matching transport protocol")
     public void logoutCookiesHaveSecureFlag() {
         Response regResponse = registerUniqueUser();
         String accessToken = extractCookie(regResponse, "access_token");
@@ -191,8 +201,8 @@ public class AuthCookieContractTest extends BaseAuthTest {
         Cookie refreshTokenCookie = extractDetailedCookie(response, "refresh_token");
         assertThat(accessTokenCookie).isNotNull();
         assertThat(refreshTokenCookie).isNotNull();
-        assertThat(accessTokenCookie.isSecured()).isTrue();
-        assertThat(refreshTokenCookie.isSecured()).isTrue();
+        assertThat(accessTokenCookie.isSecured()).isEqualTo(expectSecure());
+        assertThat(refreshTokenCookie.isSecured()).isEqualTo(expectSecure());
     }
 
     @Test(groups = {TestGroup.SECURITY, TestGroup.CONTRACT},
