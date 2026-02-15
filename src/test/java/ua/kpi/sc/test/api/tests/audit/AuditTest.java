@@ -38,7 +38,7 @@ public class AuditTest extends BaseAdminApiTest {
                 .body("totalElements", greaterThanOrEqualTo(0));
     }
 
-    @Test(groups = {TestGroup.SMOKE, TestGroup.SECURITY},
+    @Test(groups = {TestGroup.REGRESSION, TestGroup.SECURITY},
             description = "Non-admin access to audit logs returns 403")
     @Authentication(tier = "BASIC")
     public void nonAdminAccess_returns403() {
