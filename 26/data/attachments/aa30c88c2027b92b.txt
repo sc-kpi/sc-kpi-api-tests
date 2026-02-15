@@ -1,0 +1,8 @@
+[MailpitTimeoutException] No email received for rico.herzog@hotmail.com within 20 seconds
+Timestamp: 2026-02-15T15:23:25.495623332Z
+Context:
+  recipient: rico.herzog@hotmail.com
+  mailpitUrl: http://localhost:8025
+  timeoutSeconds: 20
+  lastStatusCode: 200
+  suggestion: Check that Mailpit is running at http://localhost:8025 and the application is sending emails
