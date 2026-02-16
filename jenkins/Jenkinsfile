@@ -1,0 +1,506 @@
+// ──────────────────────────────────────────────────────────────
+//  SC-KPI API Regression Tests — Jenkins Pipeline
+//  Migrated from GitHub Actions (regression.yml + nightly-regression.yml)
+// ──────────────────────────────────────────────────────────────
+
+pipeline {
+    agent any
+
+    parameters {
+        choice(
+            name: 'SUITE',
+            choices: ['smoke', 'regression', 'all'],
+            description: 'Test suite to run'
+        )
+        string(
+            name: 'API_BRANCH',
+            defaultValue: 'develop',
+            description: 'sc-kpi-api branch to checkout & build'
+        )
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['ci', 'staging'],
+            description: 'Config profile'
+        )
+        string(
+            name: 'BASE_URL',
+            defaultValue: '',
+            description: 'Override base URL (skips Docker startup if set)'
+        )
+        booleanParam(
+            name: 'AUTH_ENABLED',
+            defaultValue: true,
+            description: 'Enable authentication'
+        )
+        choice(
+            name: 'THREAD_COUNT',
+            choices: ['10', '5', '3', '1'],
+            description: 'Parallel thread count'
+        )
+        booleanParam(
+            name: 'RERUN_FAILED',
+            defaultValue: false,
+            description: 'Rerun only failed tests from a previous build'
+        )
+        string(
+            name: 'PREVIOUS_BUILD_NUMBER',
+            defaultValue: '',
+            description: 'Build number to copy testng-failed.xml from (required if RERUN_FAILED=true)'
+        )
+    }
+
+    triggers {
+        cron('0 2 * * *')
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '50'))
+    }
+
+    tools {
+        jdk 'JDK-25-Temurin'
+    }
+
+    environment {
+        TELEGRAM_BOT_TOKEN = credentials('telegram-bot-token')
+        TELEGRAM_CHAT_ID   = credentials('telegram-chat-id')
+        TELEGRAM_TOPIC_ID  = credentials('telegram-topic-id')
+    }
+
+    stages {
+
+        // ── 1. Prepare ──────────────────────────────────────────
+        stage('Prepare') {
+            steps {
+                script {
+                    def isNightly = currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').size() > 0
+
+                    if (isNightly) {
+                        env.EFFECTIVE_SUITE        = 'regression'
+                        env.EFFECTIVE_API_BRANCH   = 'develop'
+                        env.EFFECTIVE_ENVIRONMENT  = 'ci'
+                        env.EFFECTIVE_AUTH_ENABLED  = 'true'
+                        env.EFFECTIVE_THREAD_COUNT = '10'
+                        env.EFFECTIVE_BASE_URL     = ''
+                        env.IS_NIGHTLY             = 'true'
+                    } else {
+                        env.EFFECTIVE_SUITE        = params.SUITE
+                        env.EFFECTIVE_API_BRANCH   = params.API_BRANCH
+                        env.EFFECTIVE_ENVIRONMENT  = params.ENVIRONMENT
+                        env.EFFECTIVE_AUTH_ENABLED  = params.AUTH_ENABLED.toString()
+                        env.EFFECTIVE_THREAD_COUNT = params.THREAD_COUNT
+                        env.EFFECTIVE_BASE_URL     = params.BASE_URL ?: ''
+                        env.IS_NIGHTLY             = 'false'
+                    }
+
+                    env.USE_DOCKER      = (env.EFFECTIVE_BASE_URL == '') ? 'true' : 'false'
+                    env.TEST_EXIT_CODE  = '0'
+                    env.RETRY_EXIT_CODE = '0'
+                    env.INITIAL_FAILED  = '0'
+                    env.RUN_TYPE        = 'initial'
+                    env.RERUN_OUTCOME   = ''
+                    env.PIPELINE_START  = "${currentBuild.startTimeInMillis}"
+
+                    // Extract triggering user from build causes
+                    def userCause = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+                    env.TRIGGERED_BY = userCause ? userCause[0]?.userId ?: 'Jenkins' : 'Jenkins'
+
+                    def label = isNightly ? 'nightly' : env.EFFECTIVE_SUITE
+                    currentBuild.displayName = "#${BUILD_NUMBER} — ${label} (${env.EFFECTIVE_ENVIRONMENT})"
+                }
+            }
+        }
+
+        // ── 2. Checkout API ─────────────────────────────────────
+        stage('Checkout API') {
+            when { expression { env.USE_DOCKER == 'true' } }
+            steps {
+                dir('sc-kpi-api') {
+                    git url: 'https://github.com/sc-kpi/sc-kpi-api.git',
+                        branch: env.EFFECTIVE_API_BRANCH,
+                        credentialsId: 'github-credentials'
+                }
+            }
+        }
+
+        // ── 3. Start Services ───────────────────────────────────
+        stage('Start Services') {
+            when { expression { env.USE_DOCKER == 'true' } }
+            steps {
+                dir('sc-kpi-api') {
+                    sh '''
+                        export JWT_SECRET=$(openssl rand -base64 32)
+                        export SPRING_PROFILES_ACTIVE=dev
+                        docker compose up -d --build --wait --wait-timeout 180
+                    '''
+                }
+            }
+        }
+
+        // ── 4. Wait for API Health ──────────────────────────────
+        stage('Wait for API Health') {
+            when { expression { env.USE_DOCKER == 'true' } }
+            steps {
+                timeout(time: 120, unit: 'SECONDS') {
+                    sh '''
+                        until curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; do
+                            echo "Waiting for API..."
+                            sleep 2
+                        done
+                        echo "API is healthy"
+                    '''
+                }
+            }
+        }
+
+        // ── 5. Download Previous Failures ───────────────────────
+        stage('Download Previous Failures') {
+            when {
+                expression { params.RERUN_FAILED == true && params.PREVIOUS_BUILD_NUMBER?.trim() }
+            }
+            steps {
+                copyArtifacts(
+                    projectName: env.JOB_NAME,
+                    selector: specific(params.PREVIOUS_BUILD_NUMBER),
+                    filter: 'build/testng-output/**',
+                    fingerprintArtifacts: true,
+                    optional: false
+                )
+            }
+        }
+
+        // ── 6. Run Tests ────────────────────────────────────────
+        stage('Run Tests') {
+            when { expression { params.RERUN_FAILED == false } }
+            steps {
+                script {
+                    def cmd = "./gradlew ${env.EFFECTIVE_SUITE}" +
+                              " -Denv=${env.EFFECTIVE_ENVIRONMENT}" +
+                              " -DthreadCount=${env.EFFECTIVE_THREAD_COUNT}" +
+                              " -Dauth.enabled=${env.EFFECTIVE_AUTH_ENABLED}" +
+                              ' --no-daemon --build-cache'
+
+                    if (env.EFFECTIVE_BASE_URL) {
+                        cmd += " -DbaseUrl=${env.EFFECTIVE_BASE_URL}"
+                    }
+
+                    echo "Running: ${cmd}"
+                    env.TEST_EXIT_CODE = sh(script: cmd, returnStatus: true).toString()
+                }
+            }
+        }
+
+        // ── 7. Capture Initial Failures ─────────────────────────
+        stage('Capture Initial Failures') {
+            when {
+                expression { params.RERUN_FAILED == false && env.TEST_EXIT_CODE != '0' }
+            }
+            steps {
+                script {
+                    def failedXml = 'build/testng-output/testng-failed.xml'
+                    if (fileExists(failedXml)) {
+                        env.INITIAL_FAILED = sh(
+                            script: "grep -c '<include name=' ${failedXml} || echo 0",
+                            returnStdout: true
+                        ).trim()
+                    } else {
+                        env.INITIAL_FAILED = '0'
+                    }
+                }
+            }
+        }
+
+        // ── 8. Auto-Retry Failed ────────────────────────────────
+        stage('Auto-Retry Failed') {
+            when {
+                expression { params.RERUN_FAILED == false && env.TEST_EXIT_CODE != '0' }
+            }
+            steps {
+                script {
+                    def failedXml = 'build/testng-output/testng-failed.xml'
+                    if (fileExists(failedXml)) {
+                        echo 'Found testng-failed.xml, rerunning failed tests...'
+                        sh "cp ${failedXml} src/test/resources/testng/suites/testng-failed.xml"
+
+                        def retryCmd = './gradlew test -Dsuite=testng-failed.xml' +
+                                       " -Denv=${env.EFFECTIVE_ENVIRONMENT}" +
+                                       " -DthreadCount=${env.EFFECTIVE_THREAD_COUNT}" +
+                                       " -Dauth.enabled=${env.EFFECTIVE_AUTH_ENABLED}" +
+                                       ' --no-daemon'
+
+                        env.RETRY_EXIT_CODE = sh(script: retryCmd, returnStatus: true).toString()
+                        env.RUN_TYPE = 'auto-retry'
+                        env.RERUN_OUTCOME = (env.RETRY_EXIT_CODE == '0') ? 'success' : 'failure'
+                    } else {
+                        echo 'No testng-failed.xml found, skipping auto-retry'
+                    }
+                }
+            }
+        }
+
+        // ── 9. Manual Rerun Failed ──────────────────────────────
+        stage('Manual Rerun Failed') {
+            when { expression { params.RERUN_FAILED == true } }
+            steps {
+                script {
+                    def failedXml = 'build/testng-output/testng-failed.xml'
+                    if (!fileExists(failedXml)) {
+                        error('testng-failed.xml not found. Ensure the previous build number is correct and had failures.')
+                    }
+
+                    echo "Rerunning failed tests from build #${params.PREVIOUS_BUILD_NUMBER}..."
+                    sh "cp ${failedXml} src/test/resources/testng/suites/testng-failed.xml"
+
+                    def rerunCmd = './gradlew test -Dsuite=testng-failed.xml' +
+                                   " -Denv=${env.EFFECTIVE_ENVIRONMENT}" +
+                                   " -DthreadCount=${env.EFFECTIVE_THREAD_COUNT}" +
+                                   " -Dauth.enabled=${env.EFFECTIVE_AUTH_ENABLED}" +
+                                   ' --no-daemon'
+
+                    env.RETRY_EXIT_CODE = sh(script: rerunCmd, returnStatus: true).toString()
+                    env.RUN_TYPE = 'manual-rerun'
+                    env.RERUN_OUTCOME = (env.RETRY_EXIT_CODE == '0') ? 'success' : 'failure'
+                }
+            }
+        }
+
+        // ── 10. Determine Outcome ───────────────────────────────
+        stage('Determine Outcome') {
+            steps {
+                script {
+                    def failed = false
+                    if (env.RUN_TYPE == 'auto-retry') {
+                        failed = (env.RETRY_EXIT_CODE != '0')
+                    } else if (env.RUN_TYPE == 'manual-rerun') {
+                        failed = (env.RETRY_EXIT_CODE != '0')
+                    } else {
+                        failed = (env.TEST_EXIT_CODE != '0')
+                    }
+
+                    if (failed) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts(
+                artifacts: 'build/testng-output/**, build/allure-results/**, build/reports/tests/**',
+                allowEmptyArchive: true,
+                fingerprint: true
+            )
+
+            allure([
+                results: [[path: 'build/allure-results']],
+                reportBuildPolicy: 'ALWAYS'
+            ])
+
+            script {
+                // ── Telegram Notification ────────────────────────
+                sh '''#!/bin/bash
+                    set +e
+
+                    # ── Parse test results from testng-results.xml ──
+                    TESTNG_RESULTS="build/testng-output/testng-results.xml"
+
+                    if [[ -f "$TESTNG_RESULTS" ]]; then
+                        PASSED=$(grep -oP 'passed="\\K[0-9]+' "$TESTNG_RESULTS" | head -1)
+                        FAILED=$(grep -oP 'failed="\\K[0-9]+' "$TESTNG_RESULTS" | head -1)
+                        SKIPPED=$(grep -oP 'skipped="\\K[0-9]+' "$TESTNG_RESULTS" | head -1)
+                        DURATION_MS=$(grep -oP 'duration-ms="\\K[0-9]+' "$TESTNG_RESULTS" | head -1)
+                        PASSED=${PASSED:-0}
+                        FAILED=${FAILED:-0}
+                        SKIPPED=${SKIPPED:-0}
+                        DURATION_MS=${DURATION_MS:-0}
+                        BROKEN=0
+                        UNKNOWN=0
+                        TOTAL=$((PASSED + FAILED + SKIPPED))
+                    else
+                        PASSED=0; FAILED=0; SKIPPED=0; BROKEN=0; UNKNOWN=0; TOTAL=0; DURATION_MS=0
+                    fi
+
+                    # ── Duration formatting ──────────────────────
+                    TOTAL_SECS=$((DURATION_MS / 1000))
+                    HOURS=$((TOTAL_SECS / 3600))
+                    MINUTES=$(( (TOTAL_SECS % 3600) / 60 ))
+                    SECONDS=$((TOTAL_SECS % 60))
+
+                    if [[ $HOURS -gt 0 ]]; then
+                        DURATION_FMT="${HOURS}h ${MINUTES}m ${SECONDS}s"
+                    else
+                        DURATION_FMT="${MINUTES}m ${SECONDS}s"
+                    fi
+
+                    # ── Pipeline elapsed time ────────────────────
+                    NOW_MS=$(date +%s%3N)
+                    PIPELINE_START_MS="${PIPELINE_START}"
+                    WF_ELAPSED_MS=$((NOW_MS - PIPELINE_START_MS))
+                    WF_ELAPSED=$((WF_ELAPSED_MS / 1000))
+                    WF_HOURS=$((WF_ELAPSED / 3600))
+                    WF_MINUTES=$(( (WF_ELAPSED % 3600) / 60 ))
+                    WF_SECONDS=$((WF_ELAPSED % 60))
+
+                    if [[ $WF_HOURS -gt 0 ]]; then
+                        WF_TIME_FMT="${WF_HOURS}h ${WF_MINUTES}m ${WF_SECONDS}s"
+                    else
+                        WF_TIME_FMT="${WF_MINUTES}m ${WF_SECONDS}s"
+                    fi
+
+                    # ── Status ───────────────────────────────────
+                    SUITE_NAME="${EFFECTIVE_SUITE}"
+                    SUITE_DISPLAY="$(echo "${SUITE_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${SUITE_NAME:1}"
+
+                    if [[ $TOTAL -eq 0 ]]; then
+                        STATUS="BROKEN"
+                        STATUS_ICON="🟡"
+                    elif [[ $((FAILED + BROKEN)) -gt 0 ]]; then
+                        STATUS="FAILED"
+                        STATUS_ICON="🔴"
+                    else
+                        STATUS="PASSED"
+                        STATUS_ICON="🟢"
+                    fi
+
+                    # ── Pass rate bar ────────────────────────────
+                    if [[ $TOTAL -gt 0 ]]; then
+                        PASS_RATE=$((PASSED * 100 / TOTAL))
+                        FILLED=$((PASS_RATE / 5))
+                    else
+                        PASS_RATE=0
+                        FILLED=0
+                    fi
+                    EMPTY=$((20 - FILLED))
+                    BAR=$(printf '█%.0s' $(seq 1 $FILLED 2>/dev/null))$(printf '░%.0s' $(seq 1 $EMPTY 2>/dev/null))
+
+                    # ── Setup params ─────────────────────────────
+                    SETUP="— suite: ${EFFECTIVE_SUITE}"
+                    SETUP="${SETUP}
+— api_branch: ${EFFECTIVE_API_BRANCH}"
+                    SETUP="${SETUP}
+— environment: ${EFFECTIVE_ENVIRONMENT}"
+                    SETUP="${SETUP}
+— auth_enabled: ${EFFECTIVE_AUTH_ENABLED}"
+                    SETUP="${SETUP}
+— thread_count: ${EFFECTIVE_THREAD_COUNT}"
+                    SETUP="${SETUP}
+— rerun_failed: ${RERUN_FAILED}"
+                    if [[ -n "${EFFECTIVE_BASE_URL}" ]]; then
+                        SETUP="${SETUP}
+— base_url: ${EFFECTIVE_BASE_URL}"
+                    fi
+                    if [[ -n "${PREVIOUS_BUILD_NUMBER}" ]]; then
+                        SETUP="${SETUP}
+— previous_build: #${PREVIOUS_BUILD_NUMBER}"
+                    fi
+
+                    # ── Retry line ───────────────────────────────
+                    if [[ "${RUN_TYPE}" == "auto-retry" ]]; then
+                        if [[ "${RERUN_OUTCOME}" == "success" ]]; then
+                            RETRY_LINE="🔄  <b>Auto-retry:</b> ${INITIAL_FAILED} initially failed → all recovered ✅"
+                        else
+                            STILL_FAILED=$((FAILED + BROKEN))
+                            RECOVERED=$(( ${INITIAL_FAILED:-0} - STILL_FAILED ))
+                            if [[ $RECOVERED -lt 0 ]]; then RECOVERED=0; fi
+                            RETRY_LINE="🔄  <b>Auto-retry:</b> ${INITIAL_FAILED} initially failed → ${RECOVERED} recovered, ${STILL_FAILED} still failing"
+                        fi
+                    elif [[ "${RUN_TYPE}" == "manual-rerun" ]]; then
+                        if [[ "${RERUN_OUTCOME}" == "success" ]]; then
+                            RETRY_LINE="🔄  <b>Manual rerun:</b> passed ✅"
+                        else
+                            RETRY_LINE="🔄  <b>Manual rerun:</b> failed ❌"
+                        fi
+                    else
+                        RETRY_LINE="🔄  <b>Retry:</b> not needed"
+                    fi
+
+                    # ── Launched by ──────────────────────────────
+                    if [[ "${IS_NIGHTLY}" == "true" ]]; then
+                        LAUNCHED_BY="👤 <b>Launched by:</b> scheduled (nightly)"
+                    else
+                        LAUNCHED_BY="👤 <b>Launched by:</b> ${TRIGGERED_BY}"
+                    fi
+
+                    # ── URLs ─────────────────────────────────────
+                    ALLURE_URL="${BUILD_URL}allure/"
+                    JENKINS_RUN_URL="${BUILD_URL}"
+
+                    # ── Build message ────────────────────────────
+                    MESSAGE="⸻⸻⸻⸻⸻
+<b>SC KPI API ${SUITE_DISPLAY} — ${STATUS} ${STATUS_ICON}</b>
+
+<code>${BAR}</code>  ${PASS_RATE}% (${PASSED}/${TOTAL})
+
+<b>Suite:</b> ${SUITE_NAME}
+<b>Environment:</b> ${EFFECTIVE_ENVIRONMENT}
+<b>Duration:</b> ${DURATION_FMT}
+<b>Pipeline time:</b> ${WF_TIME_FMT}
+⸻⸻⸻⸻⸻
+✅   Passed: <b>${PASSED}</b>
+⛔️   Failed: <b>${FAILED}</b>
+⏭️   Skipped: <b>${SKIPPED}</b>
+⚠️   Broken: <b>${BROKEN}</b>
+⁉️   Unknown: <b>${UNKNOWN}</b>
+
+— <b>Total tests executed</b>: ${TOTAL}
+${RETRY_LINE}
+⸻⸻⸻⸻⸻
+<b>Pipeline setup:</b>
+${SETUP}
+⸻⸻⸻⸻⸻
+📊 <a href=\\"${ALLURE_URL}\\">Allure Report</a>
+🔗 <a href=\\"${JENKINS_RUN_URL}\\">Jenkins Build</a>
+
+${LAUNCHED_BY}
+⸻⸻⸻⸻⸻"
+
+                    curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+                        -d chat_id="${TELEGRAM_CHAT_ID}" \
+                        -d message_thread_id="${TELEGRAM_TOPIC_ID}" \
+                        -d parse_mode="HTML" \
+                        -d disable_web_page_preview="true" \
+                        --data-urlencode "text=${MESSAGE}" || echo "WARNING: Telegram notification failed"
+                '''
+
+                // ── Build description (summary table) ───────
+                currentBuild.description = """
+                    <table border="1" cellpadding="4" cellspacing="0">
+                    <tr><td><b>Suite</b></td><td>${env.EFFECTIVE_SUITE}</td></tr>
+                    <tr><td><b>Environment</b></td><td>${env.EFFECTIVE_ENVIRONMENT}</td></tr>
+                    <tr><td><b>API Branch</b></td><td>${env.EFFECTIVE_API_BRANCH}</td></tr>
+                    <tr><td><b>Base URL</b></td><td>${env.EFFECTIVE_BASE_URL ?: 'http://localhost:8080 (Docker)'}</td></tr>
+                    <tr><td><b>Auth Enabled</b></td><td>${env.EFFECTIVE_AUTH_ENABLED}</td></tr>
+                    <tr><td><b>Thread Count</b></td><td>${env.EFFECTIVE_THREAD_COUNT}</td></tr>
+                    <tr><td><b>Run Type</b></td><td>${env.RUN_TYPE}</td></tr>
+                    </table>
+                """.stripIndent().trim()
+            }
+        }
+
+        failure {
+            script {
+                if (env.USE_DOCKER == 'true') {
+                    dir('sc-kpi-api') {
+                        sh 'docker compose logs api --tail 200 || true'
+                    }
+                }
+            }
+        }
+
+        cleanup {
+            script {
+                if (env.USE_DOCKER == 'true') {
+                    dir('sc-kpi-api') {
+                        sh 'docker compose down -v || true'
+                    }
+                }
+            }
+            cleanWs()
+        }
+    }
+}
