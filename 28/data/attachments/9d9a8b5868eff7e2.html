@@ -1,0 +1,20 @@
+<div>GET to http://localhost:8080/api/v1/auth/oauth2/callback/google?code=invalid-code&amp;state=d34fe5b2-8104-4a9f-9631-cf40364ca7da</div>
+
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+    <h4>Cookies</h4>
+    <div>
+            <div>oauth_state: d34fe5b2-8104-4a9f-9631-cf40364ca7da</div>
+    </div>
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X GET &#39;http://localhost:8080/api/v1/auth/oauth2/callback/google?code=invalid-code&amp;state=d34fe5b2-8104-4a9f-9631-cf40364ca7da&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -b &#39;oauth_state=d34fe5b2-8104-4a9f-9631-cf40364ca7da&#39;
+    </div>
+
