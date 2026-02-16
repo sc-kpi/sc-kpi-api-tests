@@ -57,6 +57,20 @@ public final class Endpoint {
     public static final String ADMIN_FEATURE_FLAG_OVERRIDES = ADMIN_FEATURE_FLAG_BY_ID + "/overrides";
     public static final String ADMIN_FEATURE_FLAG_OVERRIDE = ADMIN_FEATURE_FLAG_OVERRIDES + "/{overrideId}";
     public static final String ADMIN_FEATURE_FLAG_BULK_TOGGLE = ADMIN_FEATURE_FLAGS + "/bulk-toggle";
+    // Notifications
+    public static final String NOTIFICATIONS = "/api/v1/notifications";
+    public static final String NOTIFICATION_BY_ID = NOTIFICATIONS + "/{id}";
+    public static final String NOTIFICATION_READ = NOTIFICATION_BY_ID + "/read";
+    public static final String NOTIFICATION_MARK_READ = NOTIFICATIONS + "/mark-read";
+    public static final String NOTIFICATION_MARK_ALL_READ = NOTIFICATIONS + "/mark-all-read";
+    public static final String NOTIFICATION_UNREAD_COUNT = NOTIFICATIONS + "/unread-count";
+    public static final String NOTIFICATION_STREAM = NOTIFICATIONS + "/stream";
+    public static final String NOTIFICATION_PREFERENCES = NOTIFICATIONS + "/preferences";
+    public static final String ADMIN_NOTIFICATIONS = "/api/v1/admin/notifications";
+    public static final String ADMIN_NOTIFICATION_BROADCAST = ADMIN_NOTIFICATIONS + "/broadcast";
+    public static final String ADMIN_NOTIFICATION_STATS = ADMIN_NOTIFICATIONS + "/stats";
+    public static final String ADMIN_NOTIFICATION_CLEANUP = ADMIN_NOTIFICATIONS + "/cleanup";
+
     // Audit
     public static final String AUDIT_LOGS = "/api/v1/admin/audit-logs";
     public static final String AUDIT_LOGS_EXPORT = AUDIT_LOGS + "/export";
