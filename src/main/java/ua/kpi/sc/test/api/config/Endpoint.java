@@ -12,6 +12,12 @@ public final class Endpoint {
     public static final String AUTH_RESET_PASSWORD = AUTH + "/reset-password";
     public static final String AUTH_OAUTH2_GOOGLE = AUTH + "/oauth2/google";
     public static final String AUTH_OAUTH2_CALLBACK_GOOGLE = AUTH + "/oauth2/callback/google";
+    public static final String AUTH_2FA_SETUP = AUTH + "/2fa/setup";
+    public static final String AUTH_2FA_VERIFY_SETUP = AUTH + "/2fa/verify-setup";
+    public static final String AUTH_2FA_DISABLE = AUTH + "/2fa/disable";
+    public static final String AUTH_2FA_STATUS = AUTH + "/2fa/status";
+    public static final String AUTH_2FA_RECOVERY_CODES_REGENERATE = AUTH + "/2fa/recovery-codes/regenerate";
+    public static final String AUTH_2FA_VERIFY_LOGIN = AUTH + "/2fa/verify-login";
 
     // Users
     public static final String USERS = "/api/v1/users";

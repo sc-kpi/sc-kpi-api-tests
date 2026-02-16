@@ -47,6 +47,10 @@ dependencies {
     // DataFaker
     implementation "net.datafaker:datafaker:${datafakerVersion}"
 
+    // TOTP
+    implementation "com.github.bastiaanjansen:otp-java:2.1.0"
+    implementation "commons-codec:commons-codec:1.17.1"
+
     // Logging
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "ch.qos.logback:logback-classic:${logbackVersion}"
