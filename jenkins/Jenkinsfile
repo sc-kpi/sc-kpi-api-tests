@@ -137,6 +137,11 @@ pipeline {
                         docker compose up -d --build --wait --wait-timeout 180
                     '''
                 }
+                sh 'docker network connect sc-kpi-network $(hostname)'
+                script {
+                    env.API_URL     = 'http://sc-kpi-api:8080'
+                    env.MAILPIT_URL = 'http://sc-kpi-mailpit:8025'
+                }
             }
         }
 
@@ -146,7 +151,7 @@ pipeline {
             steps {
                 timeout(time: 120, unit: 'SECONDS') {
                     sh '''
-                        until curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; do
+                        until curl -sf ${API_URL}/actuator/health > /dev/null 2>&1; do
                             echo "Waiting for API..."
                             sleep 2
                         done
@@ -185,6 +190,9 @@ pipeline {
 
                     if (env.EFFECTIVE_BASE_URL) {
                         cmd += " -DbaseUrl=${env.EFFECTIVE_BASE_URL}"
+                    } else if (env.USE_DOCKER == 'true') {
+                        cmd += " -DbaseUrl=${env.API_URL}"
+                        cmd += " -Dmailpit.baseUrl=${env.MAILPIT_URL}"
                     }
 
                     echo "Running: ${cmd}"
@@ -231,6 +239,13 @@ pipeline {
                                        " -Dauth.enabled=${env.EFFECTIVE_AUTH_ENABLED}" +
                                        ' --no-daemon'
 
+                        if (env.EFFECTIVE_BASE_URL) {
+                            retryCmd += " -DbaseUrl=${env.EFFECTIVE_BASE_URL}"
+                        } else if (env.USE_DOCKER == 'true') {
+                            retryCmd += " -DbaseUrl=${env.API_URL}"
+                            retryCmd += " -Dmailpit.baseUrl=${env.MAILPIT_URL}"
+                        }
+
                         env.RETRY_EXIT_CODE = sh(script: retryCmd, returnStatus: true).toString()
                         env.RUN_TYPE = 'auto-retry'
                         env.RERUN_OUTCOME = (env.RETRY_EXIT_CODE == '0') ? 'success' : 'failure'
@@ -259,6 +274,13 @@ pipeline {
                                    " -DthreadCount=${env.EFFECTIVE_THREAD_COUNT}" +
                                    " -Dauth.enabled=${env.EFFECTIVE_AUTH_ENABLED}" +
                                    ' --no-daemon'
+
+                    if (env.EFFECTIVE_BASE_URL) {
+                        rerunCmd += " -DbaseUrl=${env.EFFECTIVE_BASE_URL}"
+                    } else if (env.USE_DOCKER == 'true') {
+                        rerunCmd += " -DbaseUrl=${env.API_URL}"
+                        rerunCmd += " -Dmailpit.baseUrl=${env.MAILPIT_URL}"
+                    }
 
                     env.RETRY_EXIT_CODE = sh(script: rerunCmd, returnStatus: true).toString()
                     env.RUN_TYPE = 'manual-rerun'
@@ -473,7 +495,7 @@ ${LAUNCHED_BY}
                     <tr><td><b>Suite</b></td><td>${env.EFFECTIVE_SUITE}</td></tr>
                     <tr><td><b>Environment</b></td><td>${env.EFFECTIVE_ENVIRONMENT}</td></tr>
                     <tr><td><b>API Branch</b></td><td>${env.EFFECTIVE_API_BRANCH}</td></tr>
-                    <tr><td><b>Base URL</b></td><td>${env.EFFECTIVE_BASE_URL ?: 'http://localhost:8080 (Docker)'}</td></tr>
+                    <tr><td><b>Base URL</b></td><td>${env.EFFECTIVE_BASE_URL ?: env.API_URL ?: 'Docker'}</td></tr>
                     <tr><td><b>Auth Enabled</b></td><td>${env.EFFECTIVE_AUTH_ENABLED}</td></tr>
                     <tr><td><b>Thread Count</b></td><td>${env.EFFECTIVE_THREAD_COUNT}</td></tr>
                     <tr><td><b>Run Type</b></td><td>${env.RUN_TYPE}</td></tr>
@@ -495,6 +517,7 @@ ${LAUNCHED_BY}
         cleanup {
             script {
                 if (env.USE_DOCKER == 'true') {
+                    sh 'docker network disconnect sc-kpi-network $(hostname) || true'
                     dir('sc-kpi-api') {
                         sh 'docker compose down -v || true'
                     }

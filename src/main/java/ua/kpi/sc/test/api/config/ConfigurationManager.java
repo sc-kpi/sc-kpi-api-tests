@@ -118,6 +118,11 @@ public final class ConfigurationManager {
             config.getExecution().setThreadCount(Integer.parseInt(threadCount));
         }
 
+        String mailpitBaseUrl = System.getProperty("mailpit.baseUrl");
+        if (mailpitBaseUrl != null) {
+            config.getMailpit().setBaseUrl(mailpitBaseUrl);
+        }
+
         String mailpitTimeout = System.getProperty("mailpit.timeout");
         if (mailpitTimeout != null) {
             config.getMailpit().setTimeoutSeconds(Integer.parseInt(mailpitTimeout));
