@@ -82,6 +82,12 @@ public final class Endpoint {
     public static final String AUDIT_LOGS_EXPORT = AUDIT_LOGS + "/export";
     public static final String AUDIT_LOGS_STATS = AUDIT_LOGS + "/stats";
 
+    // Rate Limits
+    public static final String ADMIN_RATE_LIMITS = "/api/v1/admin/rate-limits";
+    public static final String ADMIN_RATE_LIMIT_BY_ID = ADMIN_RATE_LIMITS + "/{id}";
+    public static final String ADMIN_RATE_LIMIT_TOGGLE = ADMIN_RATE_LIMIT_BY_ID + "/toggle";
+    public static final String ADMIN_RATE_LIMIT_STATS = ADMIN_RATE_LIMITS + "/stats";
+
     // Actuator & Swagger
     public static final String HEALTH = "/actuator/health";
     public static final String SWAGGER_UI = "/swagger-ui.html";
