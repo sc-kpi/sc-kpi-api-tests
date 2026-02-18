@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 200 ",
+  "responseBody": "{\"id\":\"d44edd8f-b88a-4a36-b864-e91434c4b1cf\",\"email\":\"jackson.grimes@gmail.com\",\"firstName\":\"Rudolf\",\"lastName\":\"Luettgen\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false,\"twoFactorRequired\":false}"
+}

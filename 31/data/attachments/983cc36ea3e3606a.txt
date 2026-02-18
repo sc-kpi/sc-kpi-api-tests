@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 200 ",
+  "responseBody": "{\"id\":\"4dfcb368-05ba-488f-a753-45b3bf6cea58\",\"email\":\"milford.mayer@gmail.com\",\"firstName\":\"Cira\",\"lastName\":\"Mitchell\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false,\"twoFactorRequired\":false}"
+}
