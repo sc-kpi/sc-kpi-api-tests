@@ -66,7 +66,7 @@ public class TotpEnforcementTest extends BaseTotpTest {
         BroadcastRequest request = BroadcastRequest.builder()
                 .titleKey("test.title")
                 .bodyKey("test.body")
-                .category("GENERAL")
+                .category("SYSTEM")
                 .build();
         Response response = notificationAdminClient.broadcast(token, request);
         assertStatus(response, 403);
