@@ -5,14 +5,14 @@ import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import ua.kpi.sc.test.api.annotation.Authentication;
-import ua.kpi.sc.test.api.base.BaseApiTest;
+import ua.kpi.sc.test.api.base.BaseAuthenticatedApiTest;
 import ua.kpi.sc.test.api.client.notification.NotificationAdminClient;
 import ua.kpi.sc.test.api.client.notification.NotificationClient;
 import ua.kpi.sc.test.api.config.TestGroup;
 
 @Epic("Notifications")
 @Feature("Notification Security")
-public class NotificationSecurityTest extends BaseApiTest {
+public class NotificationSecurityTest extends BaseAuthenticatedApiTest {
 
     private final NotificationClient notificationClient = new NotificationClient();
     private final NotificationAdminClient adminClient = new NotificationAdminClient();
