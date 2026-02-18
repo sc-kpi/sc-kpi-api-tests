@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Auth User Response",
   "type": "object",
-  "required": ["id", "email", "firstName", "lastName", "capabilityTier", "partnerRoles"],
+  "required": ["id", "email", "firstName", "lastName", "capabilityTier", "partnerRoles", "twoFactorEnabled"],
   "properties": {
     "id": {
       "type": "string",
@@ -37,6 +37,9 @@
         },
         "additionalProperties": false
       }
+    },
+    "twoFactorEnabled": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false
