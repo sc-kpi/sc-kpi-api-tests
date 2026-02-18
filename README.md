@@ -116,8 +116,11 @@ src/
 │   │   ├── club/          #   ClubClient
 │   │   ├── department/    #   DepartmentClient
 │   │   ├── document/      #   DocumentClient
+│   │   ├── featureflag/   #   FeatureFlagClient
+│   │   ├── mail/          #   MailClient
 │   │   ├── notification/  #   NotificationSettingsClient
 │   │   ├── project/       #   ProjectClient
+│   │   ├── ratelimit/     #   RateLimitClient
 │   │   ├── user/          #   UserClient
 │   │   └── webhook/       #   TelegramWebhookClient
 │   ├── config/            # Config, ConfigurationManager, TestGroup, Endpoint
@@ -125,7 +128,7 @@ src/
 │   ├── exception/         # Typed exceptions (Api*, Auth*, Cleanup*, Schema*...)
 │   ├── listener/          # TestNG listeners (see Architecture)
 │   ├── model/             # Request/response DTOs per domain
-│   └── util/              # AllureHelper, AssertionHelper, JsonHelper, SchemaValidator
+│   └── util/              # AllureHelper, AssertionHelper, JsonHelper, SchemaValidator, TotpHelper, LoggingFilter
 │
 └── test/
     ├── java/ua/kpi/sc/test/api/
@@ -133,12 +136,10 @@ src/
     │   └── tests/         # Test classes by domain
     │       ├── audit/
     │       ├── auth/
-    │       ├── club/
-    │       ├── department/
-    │       ├── document/
+    │       ├── featureflag/
     │       ├── framework/     # AllureSetupTest, ConfigurationTest
     │       ├── notification/
-    │       ├── project/
+    │       ├── ratelimit/
     │       ├── smoke/         # HealthCheckTest, SwaggerAvailabilityTest
     │       └── user/
     └── resources/
@@ -167,13 +168,16 @@ Each base class applies `@Authentication` at the class level. Individual test me
 
 ```
 ApiClient (base)                  # requestSpec(), HTTP methods, connection error handling
-├── AuthClient                    # login, register, refresh
+├── AuthClient                    # login, register, refresh, 2FA, OAuth, password reset
 ├── ClubClient
 ├── ProjectClient
 ├── UserClient
 ├── DocumentClient
 ├── DepartmentClient
 ├── AuditClient
+├── FeatureFlagClient             # flag evaluation + admin CRUD
+├── RateLimitClient               # admin rate limit management
+├── MailClient                    # mail server integration (Mailpit)
 ├── NotificationSettingsClient
 └── TelegramWebhookClient
 ```
