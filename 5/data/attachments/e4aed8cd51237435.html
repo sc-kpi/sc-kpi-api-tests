@@ -1,0 +1,36 @@
+<div>POST to http://localhost:8080/api/v1/admin/feature-flags</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;key&quot;: &quot;test.syuxkr&quot;,
+    &quot;name&quot;: &quot;Test Flag quod&quot;,
+    &quot;description&quot;: &quot;Occaecati voluptatem praesentium repellat qui consequuntur in.&quot;,
+    &quot;enabled&quot;: true,
+    &quot;environment&quot;: null,
+    &quot;rolloutPercentage&quot;: 50
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZDhiYjQwYS1iYTNjLTQ3NjYtOTYyYy1hOWUxMGIwNjkwZTciLCJzdWIiOiIyMWYyMWYxNC1mYzY5LTRhN2EtYTk4Yy02OGNiMzU2YWYzNmMiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzcxMzg4MjU4LCJleHAiOjE3NzEzOTE4NTh9.bf4vrnwvT2Lj5QUpT0bPXSF_DBjEVHSCN3rCCE_ezJo</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/admin/feature-flags&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZDhiYjQwYS1iYTNjLTQ3NjYtOTYyYy1hOWUxMGIwNjkwZTciLCJzdWIiOiIyMWYyMWYxNC1mYzY5LTRhN2EtYTk4Yy02OGNiMzU2YWYzNmMiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzcxMzg4MjU4LCJleHAiOjE3NzEzOTE4NTh9.bf4vrnwvT2Lj5QUpT0bPXSF_DBjEVHSCN3rCCE_ezJo&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;key&quot;: &quot;test.syuxkr&quot;,
+    &quot;name&quot;: &quot;Test Flag quod&quot;,
+    &quot;description&quot;: &quot;Occaecati voluptatem praesentium repellat qui consequuntur in.&quot;,
+    &quot;enabled&quot;: true,
+    &quot;environment&quot;: null,
+    &quot;rolloutPercentage&quot;: 50
+}&#39;
+    </div>
+

@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 201 ",
+  "responseBody": "{\"id\":\"c4ad73be-ca8b-4d4a-a105-2cade6712e9d\",\"email\":\"dale.hintz@yahoo.com\",\"firstName\":\"Ressie\",\"lastName\":\"Zieme\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false}"
+}

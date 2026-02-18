@@ -1,0 +1,19 @@
+[SchemaValidationException] Schema validation failed for HTTP/1.1 200  against auth-user-response.json
+Timestamp: 2026-02-18T04:17:45.598424215Z
+Context:
+  schemaPath: auth-user-response.json
+  endpoint: HTTP/1.1 200 
+  responseBody: {"id":"9bf8960e-787d-4535-a691-94b4c7f38fcc","email":"cliff.runolfsdottir@gmail.com","firstName":"Dominick","lastName":"Frami","capabilityTier":1,"partnerRoles":[],"twoFactorEnabled":false,"twoFactorRequired":false}
+Cause: java.lang.AssertionError: 1 expectation failed.
+Response body doesn't match expectation.
+Expected: The content to match the given JSON schema.
+error: object instance has properties which are not allowed by the schema: ["twoFactorEnabled","twoFactorRequired"]
+    level: "error"
+    schema: {"loadingURI":"file:/home/runner/work/sc-kpi-api-tests/sc-kpi-api-tests/build/resources/test/schemas/auth-user-response.json#","pointer":""}
+    instance: {"pointer":""}
+    domain: "validation"
+    keyword: "additionalProperties"
+    unwanted: ["twoFactorEnabled","twoFactorRequired"]
+
+  Actual: {"id":"9bf8960e-787d-4535-a691-94b4c7f38fcc","email":"cliff.runolfsdottir@gmail.com","firstName":"Dominick","lastName":"Frami","capabilityTier":1,"partnerRoles":[],"twoFactorEnabled":false,"twoFactorRequired":false}
+

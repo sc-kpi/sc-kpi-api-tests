@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 200 ",
+  "responseBody": "{\"id\":\"9bf8960e-787d-4535-a691-94b4c7f38fcc\",\"email\":\"cliff.runolfsdottir@gmail.com\",\"firstName\":\"Dominick\",\"lastName\":\"Frami\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false,\"twoFactorRequired\":false}"
+}

@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 201 ",
+  "responseBody": "{\"id\":\"0f6754e7-fcfc-4418-bee8-914f9420afc9\",\"email\":\"zora.rodriguez@yahoo.com\",\"firstName\":\"Justa\",\"lastName\":\"Hamill\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false}"
+}

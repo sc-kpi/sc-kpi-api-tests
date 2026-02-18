@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 200 ",
+  "responseBody": "{\"id\":\"7b2c2910-8482-403b-aa0f-f94601f1700f\",\"email\":\"stan.thompson@hotmail.com\",\"firstName\":\"Cassandra\",\"lastName\":\"Brown\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false}"
+}
