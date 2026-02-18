@@ -40,6 +40,9 @@
     },
     "twoFactorEnabled": {
       "type": "boolean"
+    },
+    "twoFactorRequired": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false
