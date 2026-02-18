@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 201 ",
+  "responseBody": "{\"id\":\"368c42d8-e911-4572-beec-b860bedce8bd\",\"email\":\"myron.altenwerth@yahoo.com\",\"firstName\":\"Malcolm\",\"lastName\":\"Hartmann\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false}"
+}

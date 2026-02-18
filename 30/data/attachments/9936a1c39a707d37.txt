@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 200 ",
+  "responseBody": "{\"id\":\"7ee644f5-8b46-4f5a-9bd0-d0af337cd7e9\",\"email\":\"jesus.schulist@yahoo.com\",\"firstName\":\"Lynnette\",\"lastName\":\"Hahn\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false}"
+}

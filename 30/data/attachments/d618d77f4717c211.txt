@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 201 ",
+  "responseBody": "{\"id\":\"b80e7db4-fd8c-45cf-bce3-187155916687\",\"email\":\"eartha.macgyver@yahoo.com\",\"firstName\":\"Leontine\",\"lastName\":\"Ferry\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false}"
+}

@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 200 ",
+  "responseBody": "{\"id\":\"52de7377-a6f9-449e-a82d-4d7d8e4c9fd0\",\"email\":\"stuart.williamson@gmail.com\",\"firstName\":\"Dalene\",\"lastName\":\"McCullough\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false,\"twoFactorRequired\":false}"
+}

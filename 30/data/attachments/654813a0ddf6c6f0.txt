@@ -1,0 +1,5 @@
+{
+  "schemaPath": "auth-user-response.json",
+  "endpoint": "HTTP/1.1 200 ",
+  "responseBody": "{\"id\":\"32e04b4e-678b-4f2c-984c-4ef4808a22a5\",\"email\":\"carline.dubuque@yahoo.com\",\"firstName\":\"Kennith\",\"lastName\":\"Hyatt\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false,\"twoFactorRequired\":false}"
+}
