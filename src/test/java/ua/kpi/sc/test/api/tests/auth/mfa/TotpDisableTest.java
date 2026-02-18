@@ -17,14 +17,14 @@ public class TotpDisableTest extends BaseTotpTest {
     // ==================== SMOKE ====================
 
     @Test(groups = {TestGroup.SMOKE, TestGroup.POSITIVE},
-            description = "Disable TOTP with valid password and code returns 200")
+            description = "Disable TOTP with valid password and code returns 204")
     public void disableTotpWithValidCredentials() {
         TotpContext ctx = setupTotpForNewUser();
 
         String code = TotpHelper.generateCode(ctx.secret());
         Response response = totpClient.disableTotp(ctx.accessToken(), ctx.password(), code);
 
-        assertOk(response);
+        assertNoContent(response);
     }
 
     // ==================== POSITIVE ====================
@@ -36,7 +36,7 @@ public class TotpDisableTest extends BaseTotpTest {
 
         String code = TotpHelper.generateCode(ctx.secret());
         Response disableResponse = totpClient.disableTotp(ctx.accessToken(), ctx.password(), code);
-        assertOk(disableResponse);
+        assertNoContent(disableResponse);
 
         Response statusResponse = totpClient.getStatus(ctx.accessToken());
 
