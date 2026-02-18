@@ -1,0 +1,29 @@
+<div>POST to http://localhost:8080/api/v1/auth/2fa/verify-login</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;code&quot;: &quot;WWHM-PIMC&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+    <h4>Cookies</h4>
+    <div>
+            <div>mfa_token: eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJlNWE0MDBjMi0wOTEzLTQzMjAtYjRiNS1kOGY1NDE0MjVmYzIiLCJzdWIiOiJhYjVjZWI0OS0zZWE0LTRmM2UtYmY5Ny02YTM0ZGZjNWVkZDQiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzcxNDE1NzY4LCJleHAiOjE3NzE0MTYwNjh9.MoRzMQGXQvsxTupp-P3mzCPba1CL1DafNK0qPyEf6FM</div>
+    </div>
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/auth/2fa/verify-login&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -b &#39;mfa_token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJlNWE0MDBjMi0wOTEzLTQzMjAtYjRiNS1kOGY1NDE0MjVmYzIiLCJzdWIiOiJhYjVjZWI0OS0zZWE0LTRmM2UtYmY5Ny02YTM0ZGZjNWVkZDQiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzcxNDE1NzY4LCJleHAiOjE3NzE0MTYwNjh9.MoRzMQGXQvsxTupp-P3mzCPba1CL1DafNK0qPyEf6FM&#39; -d &#39;{
+    &quot;code&quot;: &quot;WWHM-PIMC&quot;
+}&#39;
+    </div>
+
