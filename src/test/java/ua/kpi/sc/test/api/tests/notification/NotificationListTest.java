@@ -4,7 +4,7 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
-import ua.kpi.sc.test.api.base.BaseApiTest;
+import ua.kpi.sc.test.api.base.BaseAuthenticatedApiTest;
 import ua.kpi.sc.test.api.client.notification.NotificationClient;
 import ua.kpi.sc.test.api.config.TestGroup;
 
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @Epic("Notifications")
 @Feature("Notification List")
-public class NotificationListTest extends BaseApiTest {
+public class NotificationListTest extends BaseAuthenticatedApiTest {
 
     private final NotificationClient notificationClient = new NotificationClient();
 

@@ -6,7 +6,7 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
-import ua.kpi.sc.test.api.base.BaseApiTest;
+import ua.kpi.sc.test.api.base.BaseAuthenticatedApiTest;
 import ua.kpi.sc.test.api.client.notification.NotificationClient;
 import ua.kpi.sc.test.api.config.TestGroup;
 import ua.kpi.sc.test.api.model.notification.UpdatePreferencesRequest;
@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @Epic("Notifications")
 @Feature("Notification Preferences")
-public class NotificationPreferencesTest extends BaseApiTest {
+public class NotificationPreferencesTest extends BaseAuthenticatedApiTest {
 
     private final NotificationClient notificationClient = new NotificationClient();
 
