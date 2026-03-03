@@ -1,0 +1,34 @@
+<div>POST to http://localhost:8080/api/v1/users</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;email&quot;: &quot;mikki.witting@gmail.com&quot;,
+    &quot;password&quot;: &quot;Test@663147&quot;,
+    &quot;firstName&quot;: &quot;Carin&quot;,
+    &quot;lastName&quot;: &quot;Huels&quot;,
+    &quot;tier&quot;: 1
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkNDcyYTlhYy1jM2MxLTQxZjEtODk1MC1mNjc5NzdhZTE1N2QiLCJzdWIiOiJlNmM4ZGEyNS1mNDljLTRlZGEtYmRiZS0xZTM3ZTlkNGI0MjUiLCJlbWFpbCI6IndpbGxlbmUub3NpbnNraUBob3RtYWlsLmNvbSIsInRpZXIiOjEsIm1mYSI6ZmFsc2UsImNvbnRleHRzIjp7InBhcnRuZXJzIjp7fX0sImlhdCI6MTc3MjUxMTAzNCwiZXhwIjoxNzcyNTE0NjM0fQ.9pPuRF7qtYoT_9TCeypw7jU_JZ0V3KlXYMQjb9xKlS0</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/users&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkNDcyYTlhYy1jM2MxLTQxZjEtODk1MC1mNjc5NzdhZTE1N2QiLCJzdWIiOiJlNmM4ZGEyNS1mNDljLTRlZGEtYmRiZS0xZTM3ZTlkNGI0MjUiLCJlbWFpbCI6IndpbGxlbmUub3NpbnNraUBob3RtYWlsLmNvbSIsInRpZXIiOjEsIm1mYSI6ZmFsc2UsImNvbnRleHRzIjp7InBhcnRuZXJzIjp7fX0sImlhdCI6MTc3MjUxMTAzNCwiZXhwIjoxNzcyNTE0NjM0fQ.9pPuRF7qtYoT_9TCeypw7jU_JZ0V3KlXYMQjb9xKlS0&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;email&quot;: &quot;mikki.witting@gmail.com&quot;,
+    &quot;password&quot;: &quot;Test@663147&quot;,
+    &quot;firstName&quot;: &quot;Carin&quot;,
+    &quot;lastName&quot;: &quot;Huels&quot;,
+    &quot;tier&quot;: 1
+}&#39;
+    </div>
+
