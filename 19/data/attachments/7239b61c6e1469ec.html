@@ -1,0 +1,29 @@
+<div>POST to http://localhost:8080/api/v1/auth/2fa/verify-login</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;code&quot;: &quot;FKPK-VQ20&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+    <h4>Cookies</h4>
+    <div>
+            <div>mfa_token: eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJiMGEwNmVmNy1lZjNjLTQ3ZDAtYmZiMy0wM2JlY2UxNTU0ODgiLCJzdWIiOiI2NjI2NTAyNi1mYzRlLTQ5MDgtYWMzZC1mODVjNTM3OWRlMTUiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzcyNTk3MDg1LCJleHAiOjE3NzI1OTczODV9.hsQi6OrFCshl88N1OK23jyvZ57_r8Gj_I1RzXVX8JQ0</div>
+    </div>
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/auth/2fa/verify-login&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -b &#39;mfa_token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJiMGEwNmVmNy1lZjNjLTQ3ZDAtYmZiMy0wM2JlY2UxNTU0ODgiLCJzdWIiOiI2NjI2NTAyNi1mYzRlLTQ5MDgtYWMzZC1mODVjNTM3OWRlMTUiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzcyNTk3MDg1LCJleHAiOjE3NzI1OTczODV9.hsQi6OrFCshl88N1OK23jyvZ57_r8Gj_I1RzXVX8JQ0&#39; -d &#39;{
+    &quot;code&quot;: &quot;FKPK-VQ20&quot;
+}&#39;
+    </div>
+
