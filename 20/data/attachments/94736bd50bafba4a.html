@@ -1,0 +1,52 @@
+<div>POST to http://localhost:8080/api/v1/admin/rate-limits</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;name&quot;: &quot;test.dunoacww&quot;,
+    &quot;description&quot;: &quot;Test rate limit rule&quot;,
+    &quot;endpointPattern&quot;: &quot;/api/v1/test/**&quot;,
+    &quot;httpMethod&quot;: null,
+    &quot;limitPerPeriod&quot;: 60,
+    &quot;periodSeconds&quot;: 60,
+    &quot;burstCapacity&quot;: 90,
+    &quot;scope&quot;: &quot;IP&quot;,
+    &quot;targetTier&quot;: null,
+    &quot;targetUserId&quot;: null,
+    &quot;timeWindowStart&quot;: null,
+    &quot;timeWindowEnd&quot;: null,
+    &quot;priority&quot;: 1,
+    &quot;enabled&quot;: true
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5ZWVmMWM3MS1jNjhhLTRkYjUtYmY2ZC00NzBjNTM0MTZhNDQiLCJzdWIiOiJlYWUyMjJjYy00NTNiLTRlZDItYjY3Yi00NmZkYmY1MjVlYWUiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3NzI2ODM2ODMsImV4cCI6MTc3MjY4NzI4M30.NI3N6Af3Ic-kCYBUkf6aT2Tc4Wny7NfIsQQUTc9xZbw</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/admin/rate-limits&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5ZWVmMWM3MS1jNjhhLTRkYjUtYmY2ZC00NzBjNTM0MTZhNDQiLCJzdWIiOiJlYWUyMjJjYy00NTNiLTRlZDItYjY3Yi00NmZkYmY1MjVlYWUiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3NzI2ODM2ODMsImV4cCI6MTc3MjY4NzI4M30.NI3N6Af3Ic-kCYBUkf6aT2Tc4Wny7NfIsQQUTc9xZbw&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;name&quot;: &quot;test.dunoacww&quot;,
+    &quot;description&quot;: &quot;Test rate limit rule&quot;,
+    &quot;endpointPattern&quot;: &quot;/api/v1/test/**&quot;,
+    &quot;httpMethod&quot;: null,
+    &quot;limitPerPeriod&quot;: 60,
+    &quot;periodSeconds&quot;: 60,
+    &quot;burstCapacity&quot;: 90,
+    &quot;scope&quot;: &quot;IP&quot;,
+    &quot;targetTier&quot;: null,
+    &quot;targetUserId&quot;: null,
+    &quot;timeWindowStart&quot;: null,
+    &quot;timeWindowEnd&quot;: null,
+    &quot;priority&quot;: 1,
+    &quot;enabled&quot;: true
+}&#39;
+    </div>
+
