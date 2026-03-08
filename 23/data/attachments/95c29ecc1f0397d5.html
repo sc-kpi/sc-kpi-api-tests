@@ -1,0 +1,26 @@
+<div>PATCH to http://localhost:8080/api/v1/admin/rate-limits/00000000-0000-0000-0000-000000000000/toggle</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;enabled&quot;: false
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZjA1OGUxNC02NDE2LTQyMmQtOWUzZi05N2Q5MmU3YjE2N2UiLCJzdWIiOiJhMjZhY2IwZS0wZGIzLTRhZmYtYmJjMi1lYzU3ZDk0ZjI1YjMiLCJlbWFpbCI6ImJhc2ljQHRlc3Qua3BpLnVhIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzcyOTQyNzk1LCJleHAiOjE3NzI5NDYzOTV9.hMEqj4Ir0YC9nIOHWBboNcj9oNYL5pjrOBsP1FYAj3M</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X PATCH &#39;http://localhost:8080/api/v1/admin/rate-limits/00000000-0000-0000-0000-000000000000/toggle&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZjA1OGUxNC02NDE2LTQyMmQtOWUzZi05N2Q5MmU3YjE2N2UiLCJzdWIiOiJhMjZhY2IwZS0wZGIzLTRhZmYtYmJjMi1lYzU3ZDk0ZjI1YjMiLCJlbWFpbCI6ImJhc2ljQHRlc3Qua3BpLnVhIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzcyOTQyNzk1LCJleHAiOjE3NzI5NDYzOTV9.hMEqj4Ir0YC9nIOHWBboNcj9oNYL5pjrOBsP1FYAj3M&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;enabled&quot;: false
+}&#39;
+    </div>
+
