@@ -1,1 +1,1 @@
-{"total":2,"items":[{"uid":"9338780b4a24777a17ebbfb5a29dbf31","name":"Failed suite [Smoke Tests]","statistic":{"failed":16,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":16}},{"uid":"331f55adef3ddce4d1ad2ef7551a5318","name":"Smoke Tests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":26,"unknown":0,"total":26}}]}
+{"total":1,"items":[{"uid":"82b241b674e74af340c5fd86d3356ec5","name":"Regression Tests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":496,"unknown":0,"total":496}}]}
