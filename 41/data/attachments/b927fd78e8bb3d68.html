@@ -1,0 +1,29 @@
+<div>POST to http://localhost:8080/api/v1/auth/2fa/verify-login</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;code&quot;: &quot;GNRL-7212&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+    <h4>Cookies</h4>
+    <div>
+            <div>mfa_token: eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyOTkyMWMzYi0zZTcyLTQzMDUtOWRjZC0zNDRkNDJjZDdjNDAiLCJzdWIiOiJiYjZkNzg1OC04YTk2LTQzMDktOGM3YS1jMDU3ZjRiZjk0YjAiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzc0NDk5MzY0LCJleHAiOjE3NzQ0OTk2NjR9.j0FAj9vU0cPjrd1tmhxZPK1w3JlSddpR6-zRs20z3eg</div>
+    </div>
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/auth/2fa/verify-login&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -b &#39;mfa_token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyOTkyMWMzYi0zZTcyLTQzMDUtOWRjZC0zNDRkNDJjZDdjNDAiLCJzdWIiOiJiYjZkNzg1OC04YTk2LTQzMDktOGM3YS1jMDU3ZjRiZjk0YjAiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzc0NDk5MzY0LCJleHAiOjE3NzQ0OTk2NjR9.j0FAj9vU0cPjrd1tmhxZPK1w3JlSddpR6-zRs20z3eg&#39; -d &#39;{
+    &quot;code&quot;: &quot;GNRL-7212&quot;
+}&#39;
+    </div>
+
