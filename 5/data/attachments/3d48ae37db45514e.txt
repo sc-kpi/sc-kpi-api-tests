@@ -1,5 +1,0 @@
-{
-  "schemaPath": "auth-user-response.json",
-  "endpoint": "HTTP/1.1 200 ",
-  "responseBody": "{\"id\":\"8ea81701-a7cb-4d3b-8812-713cb8ca0f41\",\"email\":\"gerard.ondricka@hotmail.com\",\"firstName\":\"Lilliana\",\"lastName\":\"Volkman\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false}"
-}

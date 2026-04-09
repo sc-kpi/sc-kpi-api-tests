@@ -1,5 +1,0 @@
-{
-  "schemaPath": "auth-user-response.json",
-  "endpoint": "HTTP/1.1 200 ",
-  "responseBody": "{\"id\":\"4425d372-74ec-40bb-aba3-199a57023e5f\",\"email\":\"perla.walsh@yahoo.com\",\"firstName\":\"Penny\",\"lastName\":\"Russel\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false,\"twoFactorRequired\":false}"
-}
