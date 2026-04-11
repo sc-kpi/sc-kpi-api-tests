@@ -1,0 +1,28 @@
+<div>POST to http://localhost:8080/api/v1/auth/2fa/disable</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;password&quot;: &quot;Test@234289&quot;,
+    &quot;code&quot;: &quot;936083&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1MGEwMTdkNy00NThhLTQyYjEtODM4MS1mMzE2NzJmY2ZlMDkiLCJzdWIiOiJjMWVmZDAzYi1lMDNhLTQxZDctYjc2Ni1kOGU3MmE4MjdiNmEiLCJlbWFpbCI6InJleW5hbGRvLmtlZWxpbmdAeWFob28uY29tIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzc1ODgwOTk2LCJleHAiOjE3NzU4ODQ1OTZ9.rweX4jw-fF6jGSPyv1JWWVedCUKqK_136pZEs9DzWOI</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/auth/2fa/disable&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1MGEwMTdkNy00NThhLTQyYjEtODM4MS1mMzE2NzJmY2ZlMDkiLCJzdWIiOiJjMWVmZDAzYi1lMDNhLTQxZDctYjc2Ni1kOGU3MmE4MjdiNmEiLCJlbWFpbCI6InJleW5hbGRvLmtlZWxpbmdAeWFob28uY29tIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzc1ODgwOTk2LCJleHAiOjE3NzU4ODQ1OTZ9.rweX4jw-fF6jGSPyv1JWWVedCUKqK_136pZEs9DzWOI&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;password&quot;: &quot;Test@234289&quot;,
+    &quot;code&quot;: &quot;936083&quot;
+}&#39;
+    </div>
+
