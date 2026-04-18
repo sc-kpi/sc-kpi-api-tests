@@ -1,0 +1,26 @@
+<div>POST to http://localhost:8080/api/v1/auth/2fa/recovery-codes/regenerate</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;code&quot;: &quot;232494&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4YTVjMjRkNi00YzVkLTQwZGMtYjgzMS1lNWZiMzljYzVkYjEiLCJzdWIiOiJhNDQ5OGRjYy1mMGI4LTQzNGYtYWE1OS1lYWI3MzNhNWZhMDMiLCJlbWFpbCI6ImxhdXJldHRhLmRpY2tlbnNAaG90bWFpbC5jb20iLCJ0aWVyIjoxLCJtZmEiOmZhbHNlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3NzY0ODY0OTQsImV4cCI6MTc3NjQ5MDA5NH0.MHdwd9hWYDwYfUEL7w1VH4ZPj1hzFF6uggu-xVzj2Kg</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/auth/2fa/recovery-codes/regenerate&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4YTVjMjRkNi00YzVkLTQwZGMtYjgzMS1lNWZiMzljYzVkYjEiLCJzdWIiOiJhNDQ5OGRjYy1mMGI4LTQzNGYtYWE1OS1lYWI3MzNhNWZhMDMiLCJlbWFpbCI6ImxhdXJldHRhLmRpY2tlbnNAaG90bWFpbC5jb20iLCJ0aWVyIjoxLCJtZmEiOmZhbHNlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3NzY0ODY0OTQsImV4cCI6MTc3NjQ5MDA5NH0.MHdwd9hWYDwYfUEL7w1VH4ZPj1hzFF6uggu-xVzj2Kg&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;code&quot;: &quot;232494&quot;
+}&#39;
+    </div>
+
