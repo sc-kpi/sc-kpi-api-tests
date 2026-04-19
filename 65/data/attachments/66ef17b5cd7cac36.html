@@ -1,0 +1,29 @@
+<div>POST to http://localhost:8080/api/v1/auth/2fa/verify-login</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;code&quot;: &quot;S79A-6RFM&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+    <h4>Cookies</h4>
+    <div>
+            <div>mfa_token: eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5OTE2YWNiMi1iNjNhLTQwNmItOGVjNC02ZjEwMjczNzZiOTUiLCJzdWIiOiJmMTc5NTcxNS03NWIzLTQ5YWYtODNjYS04Y2FhOGEyY2M5OTgiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzc2NTc0MTIyLCJleHAiOjE3NzY1NzQ0MjJ9.8ftX0fk2kQYEPg9-MWiJzPempHbM-VKPPyaB9oypwPs</div>
+    </div>
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/auth/2fa/verify-login&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -b &#39;mfa_token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5OTE2YWNiMi1iNjNhLTQwNmItOGVjNC02ZjEwMjczNzZiOTUiLCJzdWIiOiJmMTc5NTcxNS03NWIzLTQ5YWYtODNjYS04Y2FhOGEyY2M5OTgiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzc2NTc0MTIyLCJleHAiOjE3NzY1NzQ0MjJ9.8ftX0fk2kQYEPg9-MWiJzPempHbM-VKPPyaB9oypwPs&#39; -d &#39;{
+    &quot;code&quot;: &quot;S79A-6RFM&quot;
+}&#39;
+    </div>
+
