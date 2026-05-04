@@ -1,5 +1,0 @@
-{
-  "schemaPath": "auth-user-response.json",
-  "endpoint": "HTTP/1.1 200 ",
-  "responseBody": "{\"id\":\"48b4efff-c1d9-4b00-a3ae-deed4500dd5f\",\"email\":\"rolande.metz@hotmail.com\",\"firstName\":\"Tad\",\"lastName\":\"Murphy\",\"capabilityTier\":1,\"partnerRoles\":[],\"twoFactorEnabled\":false}"
-}
