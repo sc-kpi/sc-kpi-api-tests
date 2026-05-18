@@ -1,8 +1,0 @@
-[MailpitTimeoutException] No email received for dennis.cummings@gmail.com within 20 seconds
-Timestamp: 2026-03-29T04:34:28.079366168Z
-Context:
-  recipient: dennis.cummings@gmail.com
-  mailpitUrl: http://localhost:8025
-  timeoutSeconds: 20
-  lastStatusCode: 200
-  suggestion: Check that Mailpit is running at http://localhost:8025 and the application is sending emails

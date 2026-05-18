@@ -1,0 +1,28 @@
+<div>PATCH to http://localhost:8080/api/v1/users/me/password</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;currentPassword&quot;: &quot;Test@155535&quot;,
+    &quot;newPassword&quot;: &quot;NewPassword123!&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzMjJiMGUxNS1hMDM0LTQwNGMtODVkYy02OGM0MzdhZDRhNjgiLCJzdWIiOiIzYmQ4YTM2Yi05MjZiLTQ4MjUtOTM4Yi0xYzgwYTRlM2JiYTQiLCJlbWFpbCI6InJpY2gubXVycGh5QHlhaG9vLmNvbSIsInRpZXIiOjEsIm1mYSI6ZmFsc2UsImNvbnRleHRzIjp7InBhcnRuZXJzIjp7fX0sImlhdCI6MTc3OTA4NDUyMiwiZXhwIjoxNzc5MDg4MTIyfQ.57KAf4CFGAzQwEk1htXkhyVHWreOK1Llj6693XXJS7s</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X PATCH &#39;http://localhost:8080/api/v1/users/me/password&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzMjJiMGUxNS1hMDM0LTQwNGMtODVkYy02OGM0MzdhZDRhNjgiLCJzdWIiOiIzYmQ4YTM2Yi05MjZiLTQ4MjUtOTM4Yi0xYzgwYTRlM2JiYTQiLCJlbWFpbCI6InJpY2gubXVycGh5QHlhaG9vLmNvbSIsInRpZXIiOjEsIm1mYSI6ZmFsc2UsImNvbnRleHRzIjp7InBhcnRuZXJzIjp7fX0sImlhdCI6MTc3OTA4NDUyMiwiZXhwIjoxNzc5MDg4MTIyfQ.57KAf4CFGAzQwEk1htXkhyVHWreOK1Llj6693XXJS7s&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;currentPassword&quot;: &quot;Test@155535&quot;,
+    &quot;newPassword&quot;: &quot;NewPassword123!&quot;
+}&#39;
+    </div>
+
