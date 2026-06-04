@@ -1,0 +1,8 @@
+[MailpitTimeoutException] No email received for kelly.koss@yahoo.com within 20 seconds
+Timestamp: 2026-06-04T06:32:39.835160365Z
+Context:
+  recipient: kelly.koss@yahoo.com
+  mailpitUrl: http://localhost:8025
+  timeoutSeconds: 20
+  lastStatusCode: 200
+  suggestion: Check that Mailpit is running at http://localhost:8025 and the application is sending emails
