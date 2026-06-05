@@ -1,0 +1,38 @@
+<div>PUT to http://localhost:8080/api/v1/notifications/preferences</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;preferences&quot;: [
+        {
+            &quot;category&quot;: &quot;SYSTEM&quot;,
+            &quot;channel&quot;: &quot;IN_APP&quot;,
+            &quot;enabled&quot;: true
+        }
+    ]
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJlMjI1NjBlYS04MDkyLTRkZmYtYmQ4Ny05NDFlYWJjZWJjNDMiLCJzdWIiOiJhODI0MTg4ZC1jMmQ2LTQxNzEtOGJmNS0wYzQzZmI3N2M3YTQiLCJlbWFpbCI6ImJhc2ljQHRlc3Qua3BpLnVhIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzgwNjQwMjIxLCJleHAiOjE3ODA2NDM4MjF9.yw8gEV-9CvSBn9CF0dd_b7sum98dpEzxhj0X0OZI0Tg</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X PUT &#39;http://localhost:8080/api/v1/notifications/preferences&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJlMjI1NjBlYS04MDkyLTRkZmYtYmQ4Ny05NDFlYWJjZWJjNDMiLCJzdWIiOiJhODI0MTg4ZC1jMmQ2LTQxNzEtOGJmNS0wYzQzZmI3N2M3YTQiLCJlbWFpbCI6ImJhc2ljQHRlc3Qua3BpLnVhIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzgwNjQwMjIxLCJleHAiOjE3ODA2NDM4MjF9.yw8gEV-9CvSBn9CF0dd_b7sum98dpEzxhj0X0OZI0Tg&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;preferences&quot;: [
+        {
+            &quot;category&quot;: &quot;SYSTEM&quot;,
+            &quot;channel&quot;: &quot;IN_APP&quot;,
+            &quot;enabled&quot;: true
+        }
+    ]
+}&#39;
+    </div>
+
