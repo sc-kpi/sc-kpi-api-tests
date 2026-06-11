@@ -1,0 +1,28 @@
+<div>PATCH to http://localhost:8080/api/v1/admin/feature-flags/36db8e5c-7711-48d6-9492-e51803ca03bc/toggle</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;enabled&quot;: false,
+    &quot;reason&quot;: &quot;Test toggle&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzOTI2NmEyNi0wNDllLTQwZmYtOTQ5Ny1mZmFjNzIzMWFkZDIiLCJzdWIiOiJkODIxYjNhNC1iYWY2LTRlZDMtYWE3OC04ZmFlZDBhMWVhN2YiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3ODExNjAyNzYsImV4cCI6MTc4MTE2Mzg3Nn0.595eLk3JFjDyPskErO_XxMO3lHPq7n8Kj8juR9thW7U</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X PATCH &#39;http://localhost:8080/api/v1/admin/feature-flags/36db8e5c-7711-48d6-9492-e51803ca03bc/toggle&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzOTI2NmEyNi0wNDllLTQwZmYtOTQ5Ny1mZmFjNzIzMWFkZDIiLCJzdWIiOiJkODIxYjNhNC1iYWY2LTRlZDMtYWE3OC04ZmFlZDBhMWVhN2YiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3ODExNjAyNzYsImV4cCI6MTc4MTE2Mzg3Nn0.595eLk3JFjDyPskErO_XxMO3lHPq7n8Kj8juR9thW7U&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;enabled&quot;: false,
+    &quot;reason&quot;: &quot;Test toggle&quot;
+}&#39;
+    </div>
+
