@@ -1,0 +1,34 @@
+<div>POST to http://localhost:8080/api/v1/admin/notifications/broadcast</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;titleKey&quot;: &quot;test.title&quot;,
+    &quot;bodyKey&quot;: &quot;test.body&quot;,
+    &quot;bodyArgs&quot;: null,
+    &quot;category&quot;: &quot;SYSTEM&quot;,
+    &quot;targetTier&quot;: null
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5NmE1OWQ0Yy0yNWQxLTQ5OGEtODNmNC02NTk4MjRiZTI5ZDYiLCJzdWIiOiIxOThiYThjZC00NDZlLTQ2ZGUtODNjMC0wMTM3ZGVmOTU4OGIiLCJlbWFpbCI6Im1hcmlsdS5jb2xsaW5zQGhvdG1haWwuY29tIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzgxMjQ1NzE3LCJleHAiOjE3ODEyNDkzMTd9.1ckNPgdzqluRHIQIYXYrgmHl2jrl004LR6WRh05b9SE</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/admin/notifications/broadcast&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5NmE1OWQ0Yy0yNWQxLTQ5OGEtODNmNC02NTk4MjRiZTI5ZDYiLCJzdWIiOiIxOThiYThjZC00NDZlLTQ2ZGUtODNjMC0wMTM3ZGVmOTU4OGIiLCJlbWFpbCI6Im1hcmlsdS5jb2xsaW5zQGhvdG1haWwuY29tIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzgxMjQ1NzE3LCJleHAiOjE3ODEyNDkzMTd9.1ckNPgdzqluRHIQIYXYrgmHl2jrl004LR6WRh05b9SE&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;titleKey&quot;: &quot;test.title&quot;,
+    &quot;bodyKey&quot;: &quot;test.body&quot;,
+    &quot;bodyArgs&quot;: null,
+    &quot;category&quot;: &quot;SYSTEM&quot;,
+    &quot;targetTier&quot;: null
+}&#39;
+    </div>
+
