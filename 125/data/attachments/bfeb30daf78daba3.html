@@ -1,0 +1,36 @@
+<div>POST to http://localhost:8080/api/v1/admin/feature-flags</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;key&quot;: &quot;test flag key&quot;,
+    &quot;name&quot;: &quot;Test Flag asperiores&quot;,
+    &quot;description&quot;: &quot;Voluptatem debitis autem deleniti.&quot;,
+    &quot;enabled&quot;: true,
+    &quot;environment&quot;: null,
+    &quot;rolloutPercentage&quot;: 100
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1YjRjMTlhNy1hMzdhLTRkMTEtOTIzZS03YjRlNGQzZmVhMzEiLCJzdWIiOiJmNzZjODAzMC1lMTJlLTRkZGQtODQ1OC1jNzRlMjZkZDdkNWQiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3ODE3NjUyNDAsImV4cCI6MTc4MTc2ODg0MH0.5xfVdLR-lCpR4-bkdg77zNv1eozgzG8naqeGqQ3L6PI</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/admin/feature-flags&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1YjRjMTlhNy1hMzdhLTRkMTEtOTIzZS03YjRlNGQzZmVhMzEiLCJzdWIiOiJmNzZjODAzMC1lMTJlLTRkZGQtODQ1OC1jNzRlMjZkZDdkNWQiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3ODE3NjUyNDAsImV4cCI6MTc4MTc2ODg0MH0.5xfVdLR-lCpR4-bkdg77zNv1eozgzG8naqeGqQ3L6PI&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;key&quot;: &quot;test flag key&quot;,
+    &quot;name&quot;: &quot;Test Flag asperiores&quot;,
+    &quot;description&quot;: &quot;Voluptatem debitis autem deleniti.&quot;,
+    &quot;enabled&quot;: true,
+    &quot;environment&quot;: null,
+    &quot;rolloutPercentage&quot;: 100
+}&#39;
+    </div>
+
