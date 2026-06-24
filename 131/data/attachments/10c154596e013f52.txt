@@ -1,0 +1,8 @@
+[MailpitTimeoutException] No email received for buddy.nolan@gmail.com within 20 seconds
+Timestamp: 2026-06-24T06:03:11.487342884Z
+Context:
+  recipient: buddy.nolan@gmail.com
+  mailpitUrl: http://localhost:8025
+  timeoutSeconds: 20
+  lastStatusCode: 200
+  suggestion: Check that Mailpit is running at http://localhost:8025 and the application is sending emails
