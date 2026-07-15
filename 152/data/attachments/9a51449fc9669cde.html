@@ -1,0 +1,26 @@
+<div>POST to http://localhost:8080/api/v1/auth/2fa/verify-setup</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;code&quot;: &quot;869034&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0ODBjZGY5Ni0wMzc3LTQyYmMtYjA2YS1kZDRhOGM4NWJjMDQiLCJzdWIiOiI4MjI3MDI4YS02MDQ1LTRkMTQtODMwYi1lNzdmOTg1OTM4ZWEiLCJlbWFpbCI6ImRpYW5lLnNjaGlsbGVyQGhvdG1haWwuY29tIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzg0MDkwNzQ5LCJleHAiOjE3ODQwOTQzNDl9.bW7cQMHdeS_g7D4zhLPrVVGLiImaMQJK3e4HpkDwmqA</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/auth/2fa/verify-setup&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0ODBjZGY5Ni0wMzc3LTQyYmMtYjA2YS1kZDRhOGM4NWJjMDQiLCJzdWIiOiI4MjI3MDI4YS02MDQ1LTRkMTQtODMwYi1lNzdmOTg1OTM4ZWEiLCJlbWFpbCI6ImRpYW5lLnNjaGlsbGVyQGhvdG1haWwuY29tIiwidGllciI6MSwibWZhIjpmYWxzZSwiY29udGV4dHMiOnsicGFydG5lcnMiOnt9fSwiaWF0IjoxNzg0MDkwNzQ5LCJleHAiOjE3ODQwOTQzNDl9.bW7cQMHdeS_g7D4zhLPrVVGLiImaMQJK3e4HpkDwmqA&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;code&quot;: &quot;869034&quot;
+}&#39;
+    </div>
+
