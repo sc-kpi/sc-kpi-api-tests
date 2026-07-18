@@ -1,0 +1,50 @@
+<div>PATCH to http://localhost:8080/api/v1/admin/rate-limits/1cc5f617-7ed6-4268-b50a-e0fe1af8734c</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;description&quot;: &quot;Updated description&quot;,
+    &quot;endpointPattern&quot;: null,
+    &quot;httpMethod&quot;: null,
+    &quot;limitPerPeriod&quot;: 120,
+    &quot;periodSeconds&quot;: null,
+    &quot;burstCapacity&quot;: null,
+    &quot;scope&quot;: null,
+    &quot;targetTier&quot;: null,
+    &quot;targetUserId&quot;: null,
+    &quot;timeWindowStart&quot;: null,
+    &quot;timeWindowEnd&quot;: null,
+    &quot;priority&quot;: null,
+    &quot;enabled&quot;: null
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5OTg5ZmFkMC0zYjM0LTQwYmItOTZkNi03Yzc4NTY4NTM1ZjciLCJzdWIiOiJkOTFlYmE4OS1iNWIxLTQzNTgtYmVmYi0zOTc4MGFiZmFiMmYiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3ODQzNDk4MzEsImV4cCI6MTc4NDM1MzQzMX0.dm7PA17WTlHFCejLELtIHA--apTVZxyQWMobGFRZXs0</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X PATCH &#39;http://localhost:8080/api/v1/admin/rate-limits/1cc5f617-7ed6-4268-b50a-e0fe1af8734c&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5OTg5ZmFkMC0zYjM0LTQwYmItOTZkNi03Yzc4NTY4NTM1ZjciLCJzdWIiOiJkOTFlYmE4OS1iNWIxLTQzNTgtYmVmYi0zOTc4MGFiZmFiMmYiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3ODQzNDk4MzEsImV4cCI6MTc4NDM1MzQzMX0.dm7PA17WTlHFCejLELtIHA--apTVZxyQWMobGFRZXs0&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;description&quot;: &quot;Updated description&quot;,
+    &quot;endpointPattern&quot;: null,
+    &quot;httpMethod&quot;: null,
+    &quot;limitPerPeriod&quot;: 120,
+    &quot;periodSeconds&quot;: null,
+    &quot;burstCapacity&quot;: null,
+    &quot;scope&quot;: null,
+    &quot;targetTier&quot;: null,
+    &quot;targetUserId&quot;: null,
+    &quot;timeWindowStart&quot;: null,
+    &quot;timeWindowEnd&quot;: null,
+    &quot;priority&quot;: null,
+    &quot;enabled&quot;: null
+}&#39;
+    </div>
+

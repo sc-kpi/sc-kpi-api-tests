@@ -1,0 +1,32 @@
+<div>POST to http://localhost:8080/api/v1/admin/feature-flags/5675258c-e5d4-44ef-937d-bf8f516cccf3/overrides</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;overrideType&quot;: &quot;TIER&quot;,
+    &quot;tierLevel&quot;: 3,
+    &quot;userId&quot;: null,
+    &quot;enabled&quot;: false
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5OTg5ZmFkMC0zYjM0LTQwYmItOTZkNi03Yzc4NTY4NTM1ZjciLCJzdWIiOiJkOTFlYmE4OS1iNWIxLTQzNTgtYmVmYi0zOTc4MGFiZmFiMmYiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3ODQzNDk4MzEsImV4cCI6MTc4NDM1MzQzMX0.dm7PA17WTlHFCejLELtIHA--apTVZxyQWMobGFRZXs0</div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:8080/api/v1/admin/feature-flags/5675258c-e5d4-44ef-937d-bf8f516cccf3/overrides&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5OTg5ZmFkMC0zYjM0LTQwYmItOTZkNi03Yzc4NTY4NTM1ZjciLCJzdWIiOiJkOTFlYmE4OS1iNWIxLTQzNTgtYmVmYi0zOTc4MGFiZmFiMmYiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllciI6NSwibWZhIjp0cnVlLCJjb250ZXh0cyI6eyJwYXJ0bmVycyI6e319LCJpYXQiOjE3ODQzNDk4MzEsImV4cCI6MTc4NDM1MzQzMX0.dm7PA17WTlHFCejLELtIHA--apTVZxyQWMobGFRZXs0&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;overrideType&quot;: &quot;TIER&quot;,
+    &quot;tierLevel&quot;: 3,
+    &quot;userId&quot;: null,
+    &quot;enabled&quot;: false
+}&#39;
+    </div>
+
