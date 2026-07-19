@@ -1,0 +1,20 @@
+<div>GET to http://localhost:8080/api/v1/auth/oauth2/callback/google?code=test-code&amp;state=</div>
+
+
+    <h4>Headers</h4>
+    <div>
+            <div>Accept: application/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+    <h4>Cookies</h4>
+    <div>
+            <div>oauth_state: e27b47b0-afd7-4aa6-ad6e-7b54463a8e3e</div>
+    </div>
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X GET &#39;http://localhost:8080/api/v1/auth/oauth2/callback/google?code=test-code&amp;state=&#39; -H &#39;Accept: application/json&#39; -H &#39;Content-Type: application/json&#39; -b &#39;oauth_state=e27b47b0-afd7-4aa6-ad6e-7b54463a8e3e&#39;
+    </div>
+
